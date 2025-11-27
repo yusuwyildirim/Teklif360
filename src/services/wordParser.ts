@@ -168,8 +168,10 @@ function parseMiktar(text: string): number {
   // Temizle
   let cleaned = text.trim();
   
-  // Türkçe format: 1.250,50 -> 1250.50
-  // İngilizce format: 1,250.50 -> 1250.50
+  // Türkçe format: 1.250,50 -> 1250.50 (nokta binlik, virgül ondalık)
+  // Türkçe format: 2.000 -> 2000 (nokta binlik, ondalık yok)
+  // Türkçe format: 31.692 -> 31692 (nokta binlik, ondalık yok)
+  // İngilizce format: 1,250.50 -> 1250.50 (virgül binlik, nokta ondalık)
   
   // Nokta ve virgülü say
   const dotCount = (cleaned.match(/\./g) || []).length;
@@ -177,19 +179,48 @@ function parseMiktar(text: string): number {
   
   if (dotCount > 0 && commaCount > 0) {
     // İkisi de varsa, hangisi binlik ayracı hangisi ondalık ayracı?
-    // Son karakter virgülse Türkçe format (1.250,50)
+    // Virgül noktadan sonra geliyorsa Türkçe format (1.250,50)
     if (cleaned.indexOf(',') > cleaned.indexOf('.')) {
-      // Türkçe format
+      // Türkçe format: noktalar binlik ayracı, virgül ondalık
       cleaned = cleaned.replace(/\./g, '').replace(',', '.');
     } else {
-      // İngilizce format
+      // İngilizce format: virgüller binlik ayracı, nokta ondalık
       cleaned = cleaned.replace(/,/g, '');
+    }
+  } else if (dotCount > 0) {
+    // Sadece nokta varsa
+    if (dotCount === 1) {
+      // Tek nokta - ondalık mı binlik mi?
+      // Noktadan sonra 3 hane varsa veya daha fazla varsa binlik ayracıdır
+      const parts = cleaned.split('.');
+      if (parts.length === 2) {
+        const afterDot = parts[1];
+        if (afterDot.length === 3 && /^\d+$/.test(afterDot)) {
+          // 3 hane tam sayı -> muhtemelen binlik ayracı (2.000, 1.250)
+          cleaned = cleaned.replace(/\./g, '');
+        }
+        // Aksi halde ondalık ayracı olarak bırak
+      }
+    } else {
+      // Çoklu nokta - kesinlikle binlik ayracı (31.692, 1.250.000)
+      cleaned = cleaned.replace(/\./g, '');
     }
   } else if (commaCount > 0) {
     // Sadece virgül varsa
     if (commaCount === 1) {
-      // Tek virgül - muhtemelen ondalık ayracı (Türkçe)
-      cleaned = cleaned.replace(',', '.');
+      // Tek virgül - ondalık mı binlik mi?
+      // Virgülden sonra 3 hane varsa ve daha fazla hane yoksa binlik olabilir
+      const parts = cleaned.split(',');
+      if (parts.length === 2) {
+        const afterComma = parts[1];
+        if (afterComma.length === 3 && /^\d+$/.test(afterComma) && parts[0].length <= 3) {
+          // 3 hane ve sol taraf küçükse binlik (1,250)
+          cleaned = cleaned.replace(/,/g, '');
+        } else {
+          // Ondalık ayracı (Türkçe)
+          cleaned = cleaned.replace(',', '.');
+        }
+      }
     } else {
       // Çoklu virgül - binlik ayracı (İngilizce)
       cleaned = cleaned.replace(/,/g, '');

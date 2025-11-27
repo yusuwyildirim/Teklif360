@@ -203,7 +203,7 @@ const Index = () => {
         <div className="text-center mb-12 space-y-4">
           <div className="inline-flex items-center justify-center mb-4">
             <img 
-              src="/Logo/Teklif360-PNG-ICO.png" 
+              src="/Teklif360-PNG-ICO.png" 
               alt="Teklif360 Logo" 
               className="w-16 h-16 object-contain"
             />

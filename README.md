@@ -1,7 +1,7 @@
 ﻿# Teklif360
 
 <div align="center">
-  <img src="Logo/Teklif360-Logo.png" alt="Teklif360 Logo" width="200" height="200">
+  <img src="public/Teklif360-Logo.png" alt="Teklif360 Logo" width="200" height="200">
   <h3>Advanced Tender Document Converter for Construction Professionals</h3>
   <p>Professional automation tool for converting tender documents from Word to Excel with intelligent price matching</p>
 </div>

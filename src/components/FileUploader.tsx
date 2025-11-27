@@ -98,7 +98,7 @@ export const FileUploader = ({ onFileUpload }: FileUploaderProps) => {
               <Upload className="w-10 h-10 text-primary animate-bounce" />
             ) : (
               <img 
-                src="/Logo/Teklif360-PNG-ICO.png" 
+                src="/Teklif360-PNG-ICO.png" 
                 alt="Teklif360" 
                 className="w-12 h-12 object-contain"
               />

@@ -33,8 +33,10 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
   const [isDownloading, setIsDownloading] = useState(false);
   const [filterType, setFilterType] = useState<"all" | "exact" | "fuzzy" | "none">("all");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingField, setEditingField] = useState<'price' | 'quantity' | null>(null);
   const [editedData, setEditedData] = useState<TenderData[]>(data);
   const [tempPrice, setTempPrice] = useState<string>("");
+  const [tempQuantity, setTempQuantity] = useState<string>("");
 
   // Satır için match bilgisini bul
   const getMatchInfo = (pozNo: string) => {
@@ -135,43 +137,77 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
     }
   };
 
-  const handleEditStart = (index: number, currentPrice?: number) => {
+  const handleEditStart = (index: number, field: 'price' | 'quantity', currentValue?: number) => {
     setEditingIndex(index);
-    setTempPrice(currentPrice !== undefined ? currentPrice.toString() : "");
+    setEditingField(field);
+    if (field === 'price') {
+      setTempPrice(currentValue !== undefined ? currentValue.toString() : "");
+    } else {
+      setTempQuantity(currentValue !== undefined ? currentValue.toString() : "");
+    }
   };
 
   const handleEditSave = (index: number) => {
-    const newPrice = parseFloat(tempPrice.replace(",", "."));
-    
-    if (isNaN(newPrice) || newPrice < 0) {
-      toast({
-        title: "Geçersiz Fiyat",
-        description: "Lütfen geçerli bir sayı girin.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const updatedData = [...editedData];
-    updatedData[index] = {
-      ...updatedData[index],
-      birimFiyat: newPrice,
-      tutar: newPrice * updatedData[index].miktar,
-    };
+    
+    if (editingField === 'price') {
+      const newPrice = parseFloat(tempPrice.replace(",", "."));
+      
+      if (isNaN(newPrice) || newPrice < 0) {
+        toast({
+          title: "Geçersiz Fiyat",
+          description: "Lütfen geçerli bir sayı girin.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      updatedData[index] = {
+        ...updatedData[index],
+        birimFiyat: newPrice,
+        tutar: newPrice * updatedData[index].miktar,
+      };
+      
+      toast({
+        title: "Kaydedildi",
+        description: "Birim fiyat başarıyla güncellendi.",
+      });
+    } else if (editingField === 'quantity') {
+      const newQuantity = parseFloat(tempQuantity.replace(",", "."));
+      
+      if (isNaN(newQuantity) || newQuantity < 0) {
+        toast({
+          title: "Geçersiz Miktar",
+          description: "Lütfen geçerli bir sayı girin.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      updatedData[index] = {
+        ...updatedData[index],
+        miktar: newQuantity,
+        tutar: (updatedData[index].birimFiyat || 0) * newQuantity,
+      };
+      
+      toast({
+        title: "Kaydedildi",
+        description: "Miktar başarıyla güncellendi.",
+      });
+    }
     
     setEditedData(updatedData);
     setEditingIndex(null);
+    setEditingField(null);
     setTempPrice("");
-    
-    toast({
-      title: "Kaydedildi",
-      description: "Birim fiyat başarıyla güncellendi.",
-    });
+    setTempQuantity("");
   };
 
   const handleEditCancel = () => {
     setEditingIndex(null);
+    setEditingField(null);
     setTempPrice("");
+    setTempQuantity("");
   };
 
   const handleReset = () => {
@@ -274,45 +310,22 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
             {filteredData.length} kayıt gösteriliyor
           </div>
         </div>
-      </Card>
-
-      {/* Data Table */}
-      <Card className="overflow-hidden border-border/50">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">Sıra No</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">Poz No</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">İş Kaleminin Adı</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">Birimi</th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Miktarı</th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Birim Fiyat</th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Güven</th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Tutarı</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">İşlem</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {filteredData.map((row, index) => (
-                <tr
-                  key={index}
-                  className={`
-                    transition-colors
-                    ${getRowColor(row.pozNo, row.birimFiyat)}
-                    ${index % 2 === 0 && !getRowColor(row.pozNo, row.birimFiyat) ? "bg-background" : ""}
-                    ${index % 2 !== 0 && !getRowColor(row.pozNo, row.birimFiyat) ? "bg-muted/30" : ""}
-                  `}
-                >
-                  <td className="px-4 py-3 text-sm text-foreground">{row.siraNo}</td>
-                  <td className="px-4 py-3 text-sm font-mono text-primary">{row.pozNo}</td>
-                  <td className="px-4 py-3 text-sm text-foreground">{row.tanim}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.birim}</td>
                   <td className="px-4 py-3 text-sm text-right font-medium text-foreground">
-                    {row.miktar}
+                    {editingIndex === index && editingField === 'quantity' ? (
+                      <Input
+                        type="text"
+                        value={tempQuantity}
+                        onChange={(e) => setTempQuantity(e.target.value)}
+                        className="w-32 h-8 text-right"
+                        placeholder="0.00"
+                        autoFocus
+                      />
+                    ) : (
+                      row.miktar
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {editingIndex === index ? (
+                    {editingIndex === index && editingField === 'price' ? (
                       <Input
                         type="text"
                         value={tempPrice}
@@ -327,6 +340,52 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
                   </td>
                   <td className="px-4 py-3 text-sm text-right">
                     {getConfidenceBadge(row.pozNo)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-right font-medium text-foreground">
+                    {row.tutar !== undefined ? row.tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) : "-"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {editingIndex === index ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                          onClick={() => handleEditSave(index)}
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={handleEditCancel}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={() => handleEditStart(index, 'quantity', row.miktar)}
+                          title="Miktarı düzenle"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                          onClick={() => handleEditStart(index, 'price', row.birimFiyat)}
+                          title="Fiyatı düzenle"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-sm text-right font-medium text-foreground">
                     {row.tutar !== undefined ? row.tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) : "-"}
