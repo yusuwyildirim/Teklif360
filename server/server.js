@@ -78,8 +78,8 @@ app.post('/api/login', async (req, res) => {
       formData.append('__RequestVerificationToken', csrfToken);
     }
 
-    // ADIM 4: Şimdi POST isteği at (cookie ve CSRF token ile)
-    console.log('📤 Login POST isteği gönderiliyor...');
+    // ADIM 4: POST isteği at - REDIRECT'LERİ MANUEL TAKİP ET
+    console.log('📤 Login POST isteği gönderiliyor (manuel redirect tracking)...');
     const response = await axios.post(
       'https://www.oskabulut.com/kullanici-girisi',
       formData.toString(),
@@ -96,38 +96,77 @@ app.post('/api/login', async (req, res) => {
           'Origin': 'https://www.oskabulut.com',
           'Cookie': cookieJar
         },
-        maxRedirects: 5,
+        maxRedirects: 0, // MANUEL REDIRECT TAKİBİ
         validateStatus: (status) => status >= 200 && status < 500
       }
     );
 
-    // Cookie'leri al (POST response'dan VEYA önceki GET'ten)
-    let allCookies = response.headers['set-cookie'] || [];
+    // TÜM COOKIE'LERİ TOPLA
+    let allCookies = [...setCookies]; // GET cookies
+    console.log('📊 POST Response Status:', response.status);
     
-    // Eğer POST'ta yeni cookie geldiyse ekle, gelmediyse GET'teki cookie'leri kullan
-    if (allCookies.length === 0) {
-      allCookies = setCookies;
-    } else {
-      // Her iki setten de cookie'leri birleştir
-      allCookies = [...setCookies, ...allCookies];
+    // POST response cookie'leri
+    const postCookies = response.headers['set-cookie'] || [];
+    console.log('🍪 POST response cookies:', postCookies.length, 'adet');
+    if (postCookies.length > 0) {
+      console.log('🍪 POST cookies:', JSON.stringify(postCookies));
+      allCookies = [...allCookies, ...postCookies];
     }
     
-    console.log('📊 Response Status:', response.status);
-    console.log('📊 Response StatusText:', response.statusText);
-    console.log('🔀 Final URL:', response.request?.res?.responseUrl || response.config?.url || 'N/A');
+    // REDIRECT varsa takip et
+    let finalResponse = response;
+    let redirectCount = 0;
+    const maxRedirects = 5;
+    
+    while ((finalResponse.status === 301 || finalResponse.status === 302 || finalResponse.status === 303 || finalResponse.status === 307 || finalResponse.status === 308) && redirectCount < maxRedirects) {
+      const redirectLocation = finalResponse.headers['location'];
+      if (!redirectLocation) break;
+      
+      redirectCount++;
+      console.log(`🔀 Redirect ${redirectCount}: ${redirectLocation}`);
+      
+      // Tüm cookie'leri birleştir ve redirect request'e ekle
+      const currentCookieString = allCookies.map(c => c.split(';')[0]).join('; ');
+      
+      // Redirect'i takip et
+      const redirectUrl = redirectLocation.startsWith('http') 
+        ? redirectLocation 
+        : `https://www.oskabulut.com${redirectLocation}`;
+        
+      finalResponse = await axios.get(redirectUrl, {
+        headers: {
+          'Cookie': currentCookieString,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+          'Referer': 'https://www.oskabulut.com/kullanici-girisi'
+        },
+        maxRedirects: 0,
+        validateStatus: (status) => status >= 200 && status < 500
+      });
+      
+      // Redirect response'dan gelen cookie'leri ekle
+      const redirectCookies = finalResponse.headers['set-cookie'] || [];
+      console.log(`🍪 Redirect ${redirectCount} cookies:`, redirectCookies.length, 'adet');
+      if (redirectCookies.length > 0) {
+        console.log(`🍪 Redirect ${redirectCount} cookies:`, JSON.stringify(redirectCookies));
+        allCookies = [...allCookies, ...redirectCookies];
+      }
+    }
+    
+    console.log('✅ Redirect chain completed');
+    console.log('🍪 GET cookies:', setCookies.length, 'adet');
+    console.log('🍪 POST+Redirect cookies:', allCookies.length - setCookies.length, 'adet');
     console.log('🍪 Total cookies:', allCookies.length, 'adet');
     
-    // Response body'yi kontrol et (hata mesajı var mı?)
-    const bodyPreview = typeof response.data === 'string' 
-      ? response.data.substring(0, 300) 
-      : JSON.stringify(response.data).substring(0, 300);
+    // Response body'yi kontrol et (final response'dan)
+    const bodyPreview = typeof finalResponse.data === 'string' 
+      ? finalResponse.data.substring(0, 300) 
+      : JSON.stringify(finalResponse.data).substring(0, 300);
     
-    // Başarı kontrolü: Anasayfaya yönlendirildi mi? Veya login sayfasında hata var mı?
-    const isSuccessful = response.status === 200 && 
-                        (bodyPreview.includes('Anasayfa') || 
-                         bodyPreview.includes('HakedişBulut') ||
-                         response.request?.res?.responseUrl?.includes('oskabulut.com/') &&
-                         !response.request?.res?.responseUrl?.includes('kullanici-girisi'));
+    // Başarı kontrolü: 302 redirect veya 200 OK ve hata mesajı yok
+    const isSuccessful = (response.status === 302 || finalResponse.status === 200) && 
+                        allCookies.length >= 2; // En az 2 cookie olmalı
     
     const hasError = bodyPreview.includes('Geçersiz') || 
                      bodyPreview.includes('hatalı') || 
@@ -140,10 +179,13 @@ app.post('/api/login', async (req, res) => {
       // Session ID oluştur
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      // Cookie'leri sakla
+      // Cookie'leri sakla (şifre de ekle - Puppeteer için gerekli)
       sessions.set(sessionId, {
         cookies: allCookies,
+        csrfToken: csrfToken,  // CSRF token'ı sakla
+        initialCookie: cookieJar,  // İlk cookie'yi sakla
         email: email,
+        password: password,
         createdAt: Date.now()
       });
 
@@ -181,7 +223,7 @@ app.post('/api/login', async (req, res) => {
 
 /**
  * GET /api/search
- * Oskabulut'ta arama yapar
+ * Oskabulut'ta arama yapar - Gerçek API: POST /ManageLibrary/GetLibraryWorkItems
  */
 app.get('/api/search', async (req, res) => {
   const { query, sessionId } = req.query;
@@ -200,48 +242,115 @@ app.get('/api/search', async (req, res) => {
     });
   }
 
+  const session = sessions.get(sessionId);
+  
+  // ÖNCE /kutuphane sayfasını ziyaret et (ASP.NET_SessionId almak için!)
+  console.log(`🔍 Searching via API: ${query}`);
+  console.log(`📄 /kutuphane sayfası ziyaret ediliyor...`);
+  
+  // İlk cookie string: login'den gelen cookie'ler
+  let cookieString = session.cookies.map(c => c.split(';')[0]).join('; ');
+  
   try {
-    const session = sessions.get(sessionId);
-    const searchUrl = `https://www.oskabulut.com/kutuphane?searchBox=${encodeURIComponent(query)}`;
-
-    console.log(`🔍 Searching: ${query}`);
-
-    // Search request with cookies
-    const response = await axios.get(searchUrl, {
+    const kutuphaneResponse = await axios.get('https://www.oskabulut.com/kutuphane', {
       headers: {
-        'Cookie': session.cookies.join('; '),
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Referer': 'https://www.oskabulut.com/kutuphane'
+        'Cookie': cookieString,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'tr-TR,tr;q=0.9',
+        'Referer': 'https://www.oskabulut.com/'
       }
     });
+    
+    // YENİ COOKIE'LERİ AL (ASP.NET_SessionId burada gelir!)
+    const newCookies = kutuphaneResponse.headers['set-cookie'] || [];
+    if (newCookies.length > 0) {
+      console.log(`✅ /kutuphane sayfasından ${newCookies.length} yeni cookie alındı`);
+      // Yeni cookie'leri session'a ekle
+      session.cookies = [...session.cookies, ...newCookies];
+      // Cookie string'i güncelle - TÜM cookie'ler (login + kutuphane)
+      cookieString = session.cookies.map(c => c.split(';')[0]).join('; ');
+    }
+    console.log(`✅ /kutuphane sayfası başarıyla ziyaret edildi`);
+    console.log(`🍪 Login cookies: ${session.cookies.length - newCookies.length}`);
+    console.log(`🍪 Kutuphane cookies: ${newCookies.length}`);
+    console.log(`🍪 Toplam cookie sayısı: ${session.cookies.length}`);
+    console.log(`🍪 Cookie string preview: ${cookieString.substring(0, 200)}...`);
+  } catch (pageError) {
+    console.warn(`⚠️ /kutuphane sayfası hatası (devam ediliyor): ${pageError.message}`);
+  }
 
-    // HTML parse et
-    const $ = cheerio.load(response.data);
-    const results = [];
+  try {
 
-    // Tablo satırlarını bul: #genel-grid table tbody tr
-    $('#genel-grid table tbody tr').each((i, row) => {
-      const cells = $(row).find('td');
-      
-      if (cells.length >= 7) {
-        const result = {
-          pozNo: $(cells[1]).text().trim(),
-          tanim: $(cells[2]).text().trim(),
-          birim: $(cells[3]).text().trim(),
-          birimFiyat: $(cells[4]).text().trim(),
-          kitapAdi: $(cells[5]).text().trim(),
-          fasikulAdi: $(cells[6]).text().trim()
-        };
+    // Request payload hazırla (TAM FORMAT - manuel testten)
+    const payload = new URLSearchParams();
+    
+    // libraryBookFascicleIds array (11 kitap - ÇŞB, TSE, vb.)
+    for (let i = 0; i < 11; i++) {
+      payload.append(`libraryBookFascicleIds[${i}][LibraryBookId]`, String(i + 1));
+      payload.append(`libraryBookFascicleIds[${i}][LibraryFascicleId]`, '');
+    }
+    
+    // Diğer parametreler
+    payload.append('includeObsoleteWorkItems', 'false');
+    payload.append('searchInTermsOfProduction', 'false');
+    payload.append('selectedYear', '2025-Kasım');
+    payload.append('searchText', query);  // searchBox DEĞİL, searchText!
+    payload.append('take', '50');
+    payload.append('skip', '0');
+    payload.append('page', '1');
+    payload.append('pageSize', '50');
 
-        if (result.pozNo || result.tanim) {
-          results.push(result);
+    // Gerçek API endpoint: POST /ManageLibrary/GetLibraryWorkItems
+    const response = await axios.post(
+      'https://www.oskabulut.com/ManageLibrary/GetLibraryWorkItems',
+      payload.toString(),
+      {
+        headers: {
+          'Cookie': cookieString,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+          'Accept': 'application/json, text/javascript, */*; q=0.01',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Referer': 'https://www.oskabulut.com/kutuphane',
+          'Origin': 'https://www.oskabulut.com'
         }
       }
+    );
+
+    console.log(`✅ API Response Status: ${response.status}`);
+
+    // API response format kontrolü
+    let rawResults = [];
+    if (Array.isArray(response.data)) {
+      rawResults = response.data;
+    } else if (response.data.Data) {
+      rawResults = response.data.Data;
+    } else if (response.data.data) {
+      rawResults = response.data.data;
+    }
+
+    console.log(`✅ Found ${rawResults.length} results`);
+
+    // Frontend için parse et (LibraryWorkItemPrices'dan fiyat çıkar)
+    const results = rawResults.map(item => {
+      // En güncel fiyatı al (genelde ilk eleman)
+      const latestPrice = item.LibraryWorkItemPrices && item.LibraryWorkItemPrices.length > 0
+        ? item.LibraryWorkItemPrices[0].UnitPrice
+        : 0;
+
+      return {
+        pozNo: item.Number || '',
+        tanim: item.Description || '',
+        birim: item.Unit || '',
+        birimFiyat: latestPrice || 0, // NUMBER olarak gönder, string değil!
+        kitapAdi: item.LibraryBookName || 'Oskabulut',
+        fasikulAdi: item.LibraryFascicleName || 'Genel',
+        rawData: item // Debug için orijinal veriyi sakla
+      };
     });
 
-    console.log(`✅ Found ${results.length} results for: ${query}`);
+    console.log(`📊 Parsed ${results.length} items, sample:`, results[0] || 'no results');
 
     return res.json({
       success: true,
@@ -250,7 +359,8 @@ app.get('/api/search', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Search error:', error.message);
+    console.error('❌ Search error:', error.message);
+
     return res.status(500).json({
       success: false,
       error: error.message,

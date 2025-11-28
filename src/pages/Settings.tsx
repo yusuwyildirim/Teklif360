@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '@/hooks/useSettings';
 import { login, checkSession } from '@/services/oskabulutAuth';
+import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -170,13 +171,15 @@ export default function Settings() {
   };
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Ayarlar</h1>
-        <p className="text-muted-foreground">
-          Oskabulut giriş bilgilerinizi ve tema tercihlerinizi yönetin.
-        </p>
-      </div>
+    <>
+      <Header />
+      <div className="container max-w-4xl mx-auto py-8 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Ayarlar</h1>
+          <p className="text-muted-foreground">
+            Oskabulut giriş bilgilerinizi ve tema tercihlerinizi yönetin.
+          </p>
+        </div>
 
       <div className="space-y-6">
         {/* Oskabulut Credentials Card */}
@@ -339,5 +342,6 @@ export default function Settings() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

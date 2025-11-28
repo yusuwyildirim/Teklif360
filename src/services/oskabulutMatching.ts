@@ -63,7 +63,9 @@ export async function matchWithOskabulut(
       pozNo: oskabulutItem.pozNo,
       tanim: oskabulutItem.tanim,
       birim: oskabulutItem.birim,
-      birimFiyat: parseBirimFiyat(oskabulutItem.birimFiyat),
+      birimFiyat: typeof oskabulutItem.birimFiyat === 'number' 
+        ? oskabulutItem.birimFiyat 
+        : parseFloat(oskabulutItem.birimFiyat) || 0,
       source: `${oskabulutItem.kitapAdi} - ${oskabulutItem.fasikulAdi}`
     };
 

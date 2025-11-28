@@ -1,6 +1,7 @@
-import { Loader2, FileSearch, FileText } from "lucide-react";
+import { Loader2, FileSearch, FileText, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 
 interface ProcessingStatusProps {
   pdfProgress?: {
@@ -12,9 +13,11 @@ interface ProcessingStatusProps {
     totalChunks?: number;
   };
   isPdfProcessing?: boolean;
+  onCancel?: () => void;
+  cancelText?: string;
 }
 
-export const ProcessingStatus = ({ pdfProgress, isPdfProcessing }: ProcessingStatusProps) => {
+export const ProcessingStatus = ({ pdfProgress, isPdfProcessing, onCancel, cancelText = "İptal Et" }: ProcessingStatusProps) => {
   // PDF processing için özel UI
   if (isPdfProcessing && pdfProgress) {
     return (
@@ -60,6 +63,20 @@ export const ProcessingStatus = ({ pdfProgress, isPdfProcessing }: ProcessingSta
               </div>
             )}
           </div>
+
+          {/* Cancel Button */}
+          {onCancel && (
+            <div className="flex justify-center pt-4">
+              <Button 
+                variant="outline" 
+                onClick={onCancel}
+                className="gap-2"
+              >
+                <X className="w-4 h-4" />
+                {cancelText}
+              </Button>
+            </div>
+          )}
         </div>
       </Card>
     );
@@ -87,6 +104,20 @@ export const ProcessingStatus = ({ pdfProgress, isPdfProcessing }: ProcessingSta
             </div>
           </div>
         </div>
+
+        {/* Cancel Button */}
+        {onCancel && (
+          <div className="flex justify-center pt-4">
+            <Button 
+              variant="outline" 
+              onClick={onCancel}
+              className="gap-2"
+            >
+              <X className="w-4 h-4" />
+              {cancelText}
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );

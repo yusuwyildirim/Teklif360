@@ -326,7 +326,6 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
                 <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Birim Fiyat</th>
                 <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Güven</th>
                 <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Tutarı</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">İşlem</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
@@ -344,32 +343,92 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
                   <td className="px-4 py-3 text-sm font-mono text-primary">{row.pozNo}</td>
                   <td className="px-4 py-3 text-sm text-foreground">{row.tanim}</td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">{row.birim}</td>
-                  <td className="px-4 py-3 text-sm text-right font-medium text-foreground">
+                  <td className="px-4 py-3 text-sm text-right font-medium text-foreground group">
                     {editingIndex === index && editingField === 'quantity' ? (
-                      <Input
-                        type="text"
-                        value={tempQuantity}
-                        onChange={(e) => setTempQuantity(e.target.value)}
-                        className="w-32 h-8 text-right"
-                        placeholder="0.00"
-                        autoFocus
-                      />
+                      <div className="flex items-center justify-end gap-1">
+                        <Input
+                          type="text"
+                          value={tempQuantity}
+                          onChange={(e) => setTempQuantity(e.target.value)}
+                          className="w-24 h-7 text-right text-sm"
+                          placeholder="0.00"
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-green-600 hover:text-green-700"
+                          onClick={() => handleEditSave(index)}
+                        >
+                          <Check className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                          onClick={handleEditCancel}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
                     ) : (
-                      row.miktar
+                      <div className="flex items-center justify-end gap-2">
+                        <span>{row.miktar}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-blue-600 hover:text-blue-700"
+                          onClick={() => handleEditStart(index, 'quantity', row.miktar)}
+                          title="Düzenle"
+                        >
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-muted-foreground">
+                  <td className="px-4 py-3 text-sm text-right text-muted-foreground group">
                     {editingIndex === index && editingField === 'price' ? (
-                      <Input
-                        type="text"
-                        value={tempPrice}
-                        onChange={(e) => setTempPrice(e.target.value)}
-                        className="w-32 h-8 text-right"
-                        placeholder="0.00"
-                        autoFocus
-                      />
+                      <div className="flex items-center justify-end gap-1">
+                        <Input
+                          type="text"
+                          value={tempPrice}
+                          onChange={(e) => setTempPrice(e.target.value)}
+                          className="w-28 h-7 text-right text-sm"
+                          placeholder="0.00"
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-green-600 hover:text-green-700"
+                          onClick={() => handleEditSave(index)}
+                        >
+                          <Check className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                          onClick={handleEditCancel}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
                     ) : (
-                      row.birimFiyat !== undefined ? row.birimFiyat.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) : "-"
+                      <div className="flex items-center justify-end gap-2">
+                        <span>
+                          {row.birimFiyat !== undefined ? row.birimFiyat.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) : "-"}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-purple-600 hover:text-purple-700"
+                          onClick={() => handleEditStart(index, 'price', row.birimFiyat)}
+                          title="Düzenle"
+                        >
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm text-right">
@@ -378,61 +437,18 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
                   <td className="px-4 py-3 text-sm text-right font-medium text-foreground">
                     {row.tutar !== undefined ? row.tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) : "-"}
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    {editingIndex === index ? (
-                      <div className="flex items-center justify-center gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
-                          onClick={() => handleEditSave(index)}
-                        >
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={handleEditCancel}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                          onClick={() => handleEditStart(index, 'quantity', row.miktar)}
-                          title="Miktarı düzenle"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                          onClick={() => handleEditStart(index, 'price', row.birimFiyat)}
-                          title="Fiyatı düzenle"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </td>
                 </tr>
               ))}
             </tbody>
             <tfoot className="bg-gradient-to-r from-primary/5 to-accent/5 border-t-2 border-primary/20">
               <tr>
-                <td colSpan={8} className="px-4 py-3 text-right text-sm font-semibold text-foreground">
+                <td colSpan={7} className="px-4 py-3 text-right text-sm font-semibold text-foreground">
                   TOPLAM TUTAR:
                 </td>
                 <td className="px-4 py-3 text-right text-sm font-bold text-primary">
                   {editedData
                     .reduce((sum, row) => sum + (row.tutar || 0), 0)
-                    .toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+                    .toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL
                 </td>
               </tr>
             </tfoot>

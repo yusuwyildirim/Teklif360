@@ -3,7 +3,7 @@ import { FileUploader } from "@/components/FileUploader";
 import { DataPreview } from "@/components/DataPreview";
 import { ProcessingStatus } from "@/components/ProcessingStatus";
 import { Header } from "@/components/Header";
-import { FileText, Search, AlertCircle } from "lucide-react";
+import { FileText, Search, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -32,6 +32,7 @@ const Index = () => {
     none: number; 
     successRate: number;
   } | null>(null);
+  const [isCancelled, setIsCancelled] = useState(false);
   const { toast } = useToast();
   const { credentials, hasCredentials } = useSettings();
 
@@ -149,12 +150,36 @@ const Index = () => {
     }
   };
 
+  const handleCancel = () => {
+    setIsCancelled(true);
+    toast({
+      title: "İptal Edildi",
+      description: "İşlem iptal edildi. Ana sayfaya dönülüyor...",
+    });
+    handleReset();
+  };
+
+  // Calculate estimated time remaining for Oskabulut search
+  const calculateEstimatedTime = (progress: OskabulutSearchProgress) => {
+    const avgTimePerItem = 2; // Average 2 seconds per item
+    const remaining = progress.total - progress.completed;
+    const estimatedSeconds = remaining * avgTimePerItem;
+    
+    if (estimatedSeconds < 60) {
+      return `yaklaşık ${estimatedSeconds} saniye`;
+    } else {
+      const minutes = Math.ceil(estimatedSeconds / 60);
+      return `yaklaşık ${minutes} dakika`;
+    }
+  };
+
   const handleReset = () => {
     setParsedTenderData(null);
     setMatchResults(null);
     setFinalData(null);
     setSearchProgress(null);
     setMatchStats(null);
+    setIsCancelled(false);
     setCurrentStep('word-upload');
   };
 
@@ -203,7 +228,12 @@ const Index = () => {
           )}
 
           {/* Step 2: Word Processing */}
-          {currentStep === 'word-processing' && <ProcessingStatus />}
+          {currentStep === 'word-processing' && (
+            <ProcessingStatus 
+              onCancel={handleCancel}
+              cancelText="İşlemi İptal Et"
+            />
+          )}
 
           {/* Step 3: Oskabulut Search */}
           {currentStep === 'oskabulut-search' && searchProgress && (
@@ -229,9 +259,24 @@ const Index = () => {
                       style={{ width: `${(searchProgress.completed / searchProgress.total) * 100}%` }}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Şu an aranıyor: {searchProgress.current}
-                  </p>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <p>Şu an aranıyor: {searchProgress.current}</p>
+                    {searchProgress.completed > 0 && (
+                      <p className="font-medium">Tahmini kalan süre: {calculateEstimatedTime(searchProgress)}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Cancel Button */}
+                <div className="flex justify-center pt-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleCancel}
+                    className="gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    Aramayı İptal Et
+                  </Button>
                 </div>
               </div>
             </Card>

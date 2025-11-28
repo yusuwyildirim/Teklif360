@@ -24,28 +24,34 @@ export async function smartSearch(
   
   let attempts = 0;
 
-  // LEVEL 1: POZ NO ile arama
+  // LEVEL 1: POZ NO ile arama (farklı formatlarda dene)
   if (pozNo && pozNo.trim().length > 0) {
-    attempts++;
-    console.log(`[Smart Search] Level 1: POZ NO arama - "${pozNo}"`);
+    const pozVariations = [
+      pozNo.trim(),
+      pozNo.replace(/\./g, ''),        // 15.120.1101 → 151201101
+      pozNo.replace(/\./g, '/'),       // 15.120.1101 → 15/120/1101
+      pozNo.split('.').slice(0, 2).join('.'), // 15.120.1101 → 15.120
+      pozNo.split('.')[0] + '.' + pozNo.split('.')[1] // 15.120.1101 → 15.120
+    ];
     
-    const result = await searchByPozNo(pozNo.trim());
-    
-    if (result.success && result.data && result.data.length > 0) {
-      // Tam eşleşme bul
-      const exactMatch = result.data.find(item => 
-        item.pozNo.toLowerCase() === pozNo.toLowerCase().trim()
-      );
+    for (const pozVariation of pozVariations) {
+      attempts++;
+      console.log(`[Smart Search] Level 1: POZ NO arama - "${pozVariation}"`);
       
-      if (exactMatch) {
-        console.log(`[Smart Search] ✓ Level 1 başarılı - Tam eşleşme bulundu`);
+      const result = await searchByPozNo(pozVariation);
+      
+      if (result.success && result.data && result.data.length > 0) {
+        console.log(`[Smart Search] ✓ Level 1 başarılı - ${result.data.length} sonuç bulundu`);
         return {
-          result: exactMatch,
+          result: result.data[0],
           searchLevel: 'poz_no' as SearchLevel,
-          searchTerm: pozNo,
+          searchTerm: pozVariation,
           attempts
         };
       }
+      
+      // İlk deneme başarısızsa diğer varyasyonları deneme
+      if (attempts >= 2) break;
     }
   }
 
@@ -89,51 +95,64 @@ export async function smartSearch(
 }
 
 /**
- * Progressive truncation search
- * Ürün adından son kelimeleri kaldırarak arama yapar
+ * Progressive truncation search - AKILLI KISALTMA
+ * Gereksiz kelimeleri atlayıp sadece önemli anahtar kelimeleri ara
  * 
- * Örnek:
- * "5 cm kalınlıkta yüzeye dik çekme mukavemeti..." 
- * → "yüzeye dik çekme mukavemeti..."
- * → "yüzeye dik çekme"
- * → "yüzeye dik"
+ * Strateji:
+ * 1. Önce önemsiz kelimeleri temizle (ve, ile, her, gibi)
+ * 2. İlk 3-5 önemli kelimeyi al
+ * 3. Bu kelimelerle ara
+ * 4. Bulamazsa 2-3 kelimeye düşür
  */
 async function searchWithTruncation(productName: string): Promise<SmartSearchResult | null> {
   if (!productName || productName.trim().length === 0) {
     return null;
   }
 
-  const words = productName.trim().split(/\s+/);
+  // Önemsiz kelimeleri çıkar
+  const stopWords = ['ve', 'ile', 'her', 'gibi', 'için', 'olan', 'veya', 'dahil', 'de', 'da'];
+  const words = productName.trim()
+    .split(/\s+/)
+    .filter(word => !stopWords.includes(word.toLowerCase()) && word.length > 2);
   
-  // En az 2 kelime olmalı
+  // En az 2 anlamlı kelime olmalı
   if (words.length < 2) {
     return null;
   }
 
   let attempts = 0;
-  const minWords = 2; // En az bu kadar kelime kalmalı
+  
+  // AKILLI KADEMELER - Tüm kelimeleri değil, sadece kritik kombinasyonları dene
+  const searchStrategies = [
+    words.slice(0, 5).join(' '),  // İlk 5 anahtar kelime
+    words.slice(0, 3).join(' '),  // İlk 3 anahtar kelime
+    words.slice(0, 2).join(' '),  // İlk 2 anahtar kelime
+  ];
 
-  // Sondan başa doğru kelimeleri kaldır
-  for (let wordCount = words.length - 1; wordCount >= minWords; wordCount--) {
-    const truncatedName = words.slice(0, wordCount).join(' ');
+  // Kısa ürünler için ekstra strateji
+  if (words.length >= 4) {
+    searchStrategies.splice(1, 0, words.slice(0, 4).join(' ')); // İlk 4 kelime
+  }
+
+  for (const searchTerm of searchStrategies) {
     attempts++;
     
-    console.log(`[Smart Search] Level 3.${attempts}: Truncated arama - "${truncatedName}"`);
+    console.log(`[Smart Search] Level 3.${attempts}: Akıllı arama - "${searchTerm}"`);
     
-    const result = await searchByName(truncatedName);
+    const result = await searchByName(searchTerm);
     
     if (result.success && result.data && result.data.length > 0) {
       console.log(`[Smart Search] ✓ Level 3 başarılı - ${result.data.length} sonuç bulundu`);
       return {
         result: result.data[0],
         searchLevel: 'truncated' as SearchLevel,
-        searchTerm: truncatedName,
+        searchTerm: searchTerm,
         attempts
       };
     }
 
     // Rate limiting için kısa delay
-    await delay(200);
+    await delay(300);
   }
 
   return null;
