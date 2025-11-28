@@ -19,8 +19,7 @@ const allowedOrigins = [
   'http://localhost:8081', 
   'http://localhost:5173',
   'https://teklif360-production.up.railway.app',
-  'https://teklif360.netlify.app',
-  'https://quiet-alpaca-8fe588.netlify.app'
+  'https://teklif360.vercel.app'
 ];
 
 app.use(cors({
