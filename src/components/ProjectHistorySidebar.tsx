@@ -1,7 +1,7 @@
 import { ProjectHistory } from "@/types/projectHistory.types";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, FileText, Calendar, DollarSign } from "lucide-react";
+import { Trash2, FileText, Calendar, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +29,7 @@ export const ProjectHistorySidebar = ({
 }: ProjectHistorySidebarProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleDeleteClick = (projectId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -69,13 +70,31 @@ export const ProjectHistorySidebar = ({
 
   return (
     <>
-      <div className="w-64 border-r border-border bg-muted/30 flex flex-col h-screen">
-        <div className="p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">İşlem Geçmişi</h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            {projects.length} kayıtlı işlem
-          </p>
-        </div>
+      <div className={`border-r border-border bg-muted/30 flex flex-col h-screen transition-all duration-300 relative ${
+        isCollapsed ? 'w-12' : 'w-64'
+      }`}>
+        {/* Collapse/Expand Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -right-3 top-4 z-10 h-6 w-6 rounded-full border border-border bg-background p-0 shadow-md hover:bg-accent"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronLeft className="h-3 w-3" />
+          )}
+        </Button>
+
+        {!isCollapsed && (
+          <>
+            <div className="p-4 border-b border-border">
+              <h2 className="text-lg font-semibold text-foreground">İşlem Geçmişi</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                {projects.length} kayıtlı işlem
+              </p>
+            </div>
 
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
@@ -93,24 +112,30 @@ export const ProjectHistorySidebar = ({
                   onClick={() => onSelectProject(project.id)}
                   className={`
                     group relative p-3 rounded-lg cursor-pointer transition-all
-                    hover:bg-accent/50 border border-transparent
+                    hover:bg-primary/5 border border-transparent
                     ${
                       selectedProjectId === project.id
-                        ? "bg-accent border-primary/20"
+                        ? "bg-primary/10 border-primary/30 hover:bg-primary/10"
                         : "hover:border-border"
                     }
                   `}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-foreground truncate">
+                      <h3 className={`text-sm font-medium truncate ${
+                        selectedProjectId === project.id ? "text-primary" : "text-foreground"
+                      }`}>
                         {project.name}
                       </h3>
-                      <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                      <div className={`flex items-center gap-1 mt-1 text-xs ${
+                        selectedProjectId === project.id ? "text-primary/80" : "text-muted-foreground"
+                      }`}>
                         <Calendar className="w-3 h-3" />
                         <span>{formatDate(project.date)}</span>
                       </div>
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                      <div className={`flex items-center gap-3 mt-1.5 text-xs ${
+                        selectedProjectId === project.id ? "text-primary/70" : "text-muted-foreground"
+                      }`}>
                         <span>{project.itemCount} kalem</span>
                         <div className="flex items-center gap-0.5">
                           <DollarSign className="w-3 h-3" />
@@ -136,6 +161,15 @@ export const ProjectHistorySidebar = ({
             )}
           </div>
         </ScrollArea>
+          </>
+        )}
+
+        {/* Collapsed State - Show icon only */}
+        {isCollapsed && (
+          <div className="flex-1 flex items-start justify-center pt-4">
+            <FileText className="w-5 h-5 text-muted-foreground" />
+          </div>
+        )}
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

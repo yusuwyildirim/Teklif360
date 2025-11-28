@@ -359,10 +359,10 @@ const Index = () => {
                       style={{ width: `${(searchProgress.completed / searchProgress.total) * 100}%` }}
                     />
                   </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <p>Şu an aranıyor: {searchProgress.current}</p>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Şu an aranıyor: {searchProgress.current}</p>
                     {searchProgress.completed > 0 && (
-                      <p className="font-medium">Tahmini kalan süre: {calculateEstimatedTime(searchProgress)}</p>
+                      <p className="text-xs font-medium text-primary">⏱️ Tahmini kalan süre: {calculateEstimatedTime(searchProgress)}</p>
                     )}
                   </div>
                 </div>

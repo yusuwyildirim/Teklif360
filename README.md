@@ -319,6 +319,39 @@ chore: Build/config change
 - Add comments for complex logic
 - Ensure responsive design compatibility
 
+## 🌐 Deployment
+
+This application consists of 2 parts:
+1. **Frontend** (React + Vite) → Deploy on Netlify
+2. **Backend** (Express Proxy for Oskabulut.com) → Deploy on Railway
+
+### Quick Deployment Guide
+
+#### Backend (Railway.app)
+```bash
+cd server
+railway init
+railway up
+# Get your URL: https://xxx.railway.app
+```
+
+#### Frontend (Netlify)
+```bash
+# Set environment variable
+echo "VITE_API_URL=https://xxx.railway.app" > .env.production
+
+# Build and deploy
+npm run build
+netlify deploy --prod
+```
+
+**Detailed instructions:** See [DEPLOYMENT.md](DEPLOYMENT.md)
+
+### Data Storage
+- **Project History**: Stored in browser's localStorage (persistent, ~5-10MB limit)
+- **User Credentials**: Stored locally in localStorage (never sent to servers)
+- **Files**: Processed in-browser, not uploaded to any server
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

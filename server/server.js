@@ -14,8 +14,26 @@ const app = express();
 const PORT = 3001;
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:8080', 
+  'http://localhost:8081', 
+  'http://localhost:5173',
+  // Add your Netlify URL here when deployed
+  // 'https://your-app.netlify.app'
+];
+
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:5173'],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -24,6 +42,18 @@ app.use(cookieParser());
 
 // Session storage (her kullanıcı için cookies)
 const sessions = new Map();
+
+/**
+ * GET /health
+ * Health check endpoint for Railway/Render deployment
+ */
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    sessions: sessions.size
+  });
+});
 
 /**
  * POST /api/login
