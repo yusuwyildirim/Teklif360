@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSettings } from '@/hooks/useSettings';
+import { useProjectHistory } from '@/hooks/useProjectHistory';
 import { login, checkSession } from '@/services/oskabulutAuth';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,17 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Trash2, CheckCircle, XCircle, Moon, Sun } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Loader2, Save, Trash2, CheckCircle, XCircle, Moon, Sun, History } from 'lucide-react';
 
 export default function Settings() {
   const { 
@@ -32,6 +43,9 @@ export default function Settings() {
   const [isLoading, setIsLoading] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [deleteHistoryDialogOpen, setDeleteHistoryDialogOpen] = useState(false);
+  
+  const { projects, deleteAllProjects } = useProjectHistory();
 
   // Mevcut credentials'ı form'a yükle
   useEffect(() => {
@@ -168,6 +182,17 @@ export default function Settings() {
     } finally {
       setIsTestingConnection(false);
     }
+  };
+
+  const handleDeleteAllHistory = () => {
+    const success = deleteAllProjects();
+    if (success) {
+      toast({
+        title: "Geçmiş Silindi",
+        description: "Tüm işlem geçmişi başarıyla silindi.",
+      });
+    }
+    setDeleteHistoryDialogOpen(false);
   };
 
   return (
@@ -324,6 +349,40 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        {/* Project History Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>İşlem Geçmişi</CardTitle>
+            <CardDescription>
+              Kaydedilmiş işlem geçmişinizi yönetin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <History className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">Kayıtlı İşlem Sayısı</p>
+                  <p className="text-sm text-muted-foreground">
+                    {projects.length} işlem kaydedildi
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={() => setDeleteHistoryDialogOpen(true)}
+                disabled={projects.length === 0}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Tümünü Sil
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              ℹ️ İşlem geçmişi yalnızca tarayıcınızda localStorage'da saklanır.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Info Card */}
         <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
           <CardContent className="pt-6">
@@ -342,6 +401,27 @@ export default function Settings() {
         </Card>
       </div>
     </div>
+    
+    {/* Delete History Confirmation Dialog */}
+    <AlertDialog open={deleteHistoryDialogOpen} onOpenChange={setDeleteHistoryDialogOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Tüm Geçmişi Sil</AlertDialogTitle>
+          <AlertDialogDescription>
+            {projects.length} işlem kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>İptal</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={handleDeleteAllHistory}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            Tümünü Sil
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }

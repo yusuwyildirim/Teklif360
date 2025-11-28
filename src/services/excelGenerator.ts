@@ -14,7 +14,7 @@ import type { TenderData } from '@/types/tender.types';
  */
 export async function generateAndDownloadExcel(
   data: TenderData[], 
-  fileName: string = 'BirimFiyatTeklifi.xlsx'
+  fileName?: string
 ): Promise<void> {
   try {
     // Workbook oluştur
@@ -42,8 +42,16 @@ export async function generateAndDownloadExcel(
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
     });
     
+    // Generate filename with timestamp if project name provided
+    let finalFileName = 'BirimFiyatTeklifi.xlsx';
+    if (fileName) {
+      const sanitizedName = fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      const timestamp = new Date().getTime();
+      finalFileName = `${sanitizedName}_${timestamp}.xlsx`;
+    }
+    
     // Dosyayı indir
-    saveAs(blob, fileName);
+    saveAs(blob, finalFileName);
     
   } catch (error) {
     console.error('Excel oluşturma hatası:', error);

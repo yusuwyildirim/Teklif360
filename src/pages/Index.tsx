@@ -3,6 +3,8 @@ import { FileUploader } from "@/components/FileUploader";
 import { DataPreview } from "@/components/DataPreview";
 import { ProcessingStatus } from "@/components/ProcessingStatus";
 import { Header } from "@/components/Header";
+import { ProjectHistorySidebar } from "@/components/ProjectHistorySidebar";
+import { ProjectNameDialog } from "@/components/ProjectNameDialog";
 import { FileText, Search, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,6 +14,8 @@ import { matchWithOskabulut, applyMatchesToTenderData, getMatchStatistics } from
 import { login } from "@/services/oskabulutAuth";
 import { useSettings } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/use-toast";
+import { useProjectHistory } from "@/hooks/useProjectHistory";
+import type { ProjectHistory } from "@/types/projectHistory.types";
 import type { TenderData, MatchResult } from "@/types/tender.types";
 import type { OskabulutSearchProgress } from "@/types/oskabulut.types";
 import { Link } from "react-router-dom";
@@ -33,8 +37,14 @@ const Index = () => {
     successRate: number;
   } | null>(null);
   const [isCancelled, setIsCancelled] = useState(false);
+  const [projectNameDialogOpen, setProjectNameDialogOpen] = useState(false);
+  const [currentProjectName, setCurrentProjectName] = useState<string>("");
+  const [currentFileName, setCurrentFileName] = useState<string>("");
+  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>(undefined);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const { toast } = useToast();
   const { credentials, hasCredentials } = useSettings();
+  const { projects, saveProject, deleteProject, getProject } = useProjectHistory();
 
   const handleWordFileUpload = async (file: File) => {
     // Önce credentials kontrolü
@@ -47,6 +57,23 @@ const Index = () => {
       return;
     }
 
+    // Store file and show project name dialog
+    setPendingFile(file);
+    setCurrentFileName(file.name);
+    setProjectNameDialogOpen(true);
+  };
+
+  const handleProjectNameConfirm = async (projectName: string) => {
+    setCurrentProjectName(projectName);
+    setProjectNameDialogOpen(false);
+    
+    // Now process the stored file
+    if (pendingFile) {
+      await processWordFile(pendingFile);
+    }
+  };
+
+  const processWordFile = async (file: File) => {
     setCurrentStep('word-processing');
     
     try {
@@ -181,13 +208,86 @@ const Index = () => {
     setMatchStats(null);
     setIsCancelled(false);
     setCurrentStep('word-upload');
+    setCurrentProjectName("");
+    setCurrentFileName("");
+    setSelectedProjectId(undefined);
+    setPendingFile(null);
+  };
+
+  const handleSaveProject = (data: TenderData[]) => {
+    if (!currentProjectName) return;
+
+    const totalAmount = data.reduce((sum, item) => sum + (item.tutar || 0), 0);
+
+    const project: ProjectHistory = {
+      id: Date.now().toString(),
+      name: currentProjectName,
+      date: new Date().toISOString(),
+      fileName: currentFileName,
+      itemCount: data.length,
+      totalAmount,
+      data: data.map(item => ({
+        siraNo: item.siraNo,
+        pozNo: item.pozNo,
+        tanim: item.tanim,
+        birim: item.birim,
+        miktar: item.miktar,
+        birimFiyat: item.birimFiyat || 0,
+        tutar: item.tutar || 0,
+      })),
+    };
+
+    saveProject(project);
+    setSelectedProjectId(project.id);
+  };
+
+  const handleSelectProject = (projectId: string) => {
+    const project = getProject(projectId);
+    if (project) {
+      setSelectedProjectId(projectId);
+      setCurrentProjectName(project.name);
+      setCurrentFileName(project.fileName);
+      setFinalData(project.data as TenderData[]);
+      setCurrentStep('preview');
+      toast({
+        title: "İşlem Yüklendi",
+        description: `"${project.name}" yüklendi.`,
+      });
+    }
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    deleteProject(projectId);
+    if (selectedProjectId === projectId) {
+      handleReset();
+    }
+    toast({
+      title: "İşlem Silindi",
+      description: "İşlem geçmişten silindi.",
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex">
+      {/* Project History Sidebar */}
+      <ProjectHistorySidebar
+        projects={projects}
+        onSelectProject={handleSelectProject}
+        onDeleteProject={handleDeleteProject}
+        selectedProjectId={selectedProjectId}
+      />
       
-      <main className="container mx-auto px-4 py-12">
+      {/* Project Name Dialog */}
+      <ProjectNameDialog
+        open={projectNameDialogOpen}
+        onConfirm={handleProjectNameConfirm}
+        defaultName={currentFileName.replace('.docx', '').replace('.doc', '')}
+      />
+      
+      <div className="flex-1">
+        <Header />
+        
+        <main className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12 space-y-4">
           <div className="inline-flex items-center justify-center mb-4">
@@ -289,6 +389,8 @@ const Index = () => {
               onReset={handleReset}
               matchResults={matchResults || []}
               matchStats={matchStats || undefined}
+              onSaveProject={handleSaveProject}
+              projectName={currentProjectName}
             />
           )}
         </div>
@@ -330,6 +432,7 @@ const Index = () => {
           </div>
         )}
       </main>
+      </div>
     </div>
   );
 };

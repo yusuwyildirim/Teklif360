@@ -26,9 +26,11 @@ interface DataPreviewProps {
     none: number;
     successRate: number;
   };
+  onSaveProject?: (data: TenderData[]) => void;
+  projectName?: string;
 }
 
-export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: DataPreviewProps) => {
+export const DataPreview = ({ data, onReset, matchResults = [], matchStats, onSaveProject, projectName }: DataPreviewProps) => {
   const { toast } = useToast();
   const [isDownloading, setIsDownloading] = useState(false);
   const [filterType, setFilterType] = useState<"all" | "exact" | "fuzzy" | "none">("all");
@@ -119,11 +121,16 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
     
     try {
       // Excel dosyasını oluştur ve indir (editedData kullan)
-      await generateAndDownloadExcel(editedData);
+      await generateAndDownloadExcel(editedData, projectName);
+      
+      // Save project to history
+      if (onSaveProject) {
+        onSaveProject(editedData);
+      }
       
       toast({
         title: "Başarılı!",
-        description: "Excel dosyanız indirildi.",
+        description: "Excel dosyanız indirildi ve işlem kaydedildi.",
       });
     } catch (error) {
       console.error("Excel indirme hatası:", error);
