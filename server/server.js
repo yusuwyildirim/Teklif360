@@ -11,7 +11,7 @@ import * as cheerio from 'cheerio';
 import cookieParser from 'cookie-parser';
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 const allowedOrigins = [
@@ -432,10 +432,10 @@ app.get('/health', (req, res) => {
 });
 
 // Server başlat
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 Teklif360 Proxy Server çalışıyor`);
   console.log(`📡 Port: ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
+  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`\n✅ Hazır! Frontend'den istekleri kabul ediyor.\n`);
 });
 
