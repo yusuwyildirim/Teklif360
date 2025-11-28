@@ -46,18 +46,18 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
   // Güven skoruna göre satır rengini belirle
   const getRowColor = (pozNo: string, birimFiyat: number | undefined) => {
     if (birimFiyat === undefined) {
-      return "bg-red-50 hover:bg-red-100"; // Eşleşmedi
+      return "bg-red-50 hover:bg-red-100";
     }
     
     const match = getMatchInfo(pozNo);
     if (!match) return "";
     
     if (match.matchType === 'exact' && match.confidence === 100) {
-      return "bg-green-50 hover:bg-green-100"; // Tam eşleşme
+      return "bg-green-50 hover:bg-green-100";
     } else if (match.matchType === 'fuzzy' && match.confidence >= 50) {
-      return "bg-yellow-50 hover:bg-yellow-100"; // İyi fuzzy
+      return "bg-yellow-50 hover:bg-yellow-100";
     } else if (match.matchType === 'fuzzy' && match.confidence >= 20) {
-      return "bg-orange-50 hover:bg-orange-100"; // Düşük güven fuzzy
+      return "bg-orange-50 hover:bg-orange-100";
     }
     
     return "";
@@ -113,12 +113,10 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
     ? matchStats.none 
     : editedData.filter(d => d.birimFiyat === undefined).length;
 
-
   const handleDownload = async () => {
     setIsDownloading(true);
     
     try {
-      // Excel dosyasını oluştur ve indir (editedData kullan)
       await generateAndDownloadExcel(editedData);
       
       toast({
@@ -250,7 +248,7 @@ export const DataPreview = ({ data, onReset, matchResults = [], matchStats }: Da
         </div>
       </Card>
 
-      {/* Statistics Cards - Moved from bottom */}
+      {/* Statistics Cards */}
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="p-4 bg-gradient-to-br from-card to-card/50">
           <p className="text-sm text-muted-foreground mb-1">Toplam Kalem</p>

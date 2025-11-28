@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { FileUploader } from "@/components/FileUploader";
-import { PdfUploader } from "@/components/PdfUploader";
 import { DataPreview } from "@/components/DataPreview";
 import { ProcessingStatus } from "@/components/ProcessingStatus";
 import { Header } from "@/components/Header";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, Search, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { parseWordDocument } from "@/services/wordParser";
-import { parsePdfPriceList } from "@/services/pdfParser";
-import { matchPrices, applyMatchesToTenderData, getMatchStatistics } from "@/services/priceMatching";
+import { matchWithOskabulut, applyMatchesToTenderData, getMatchStatistics } from "@/services/oskabulutMatching";
+import { login } from "@/services/oskabulutAuth";
+import { useSettings } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/use-toast";
-import type { TenderData, PriceListItem, MatchResult } from "@/types/tender.types";
+import type { TenderData, MatchResult } from "@/types/tender.types";
+import type { OskabulutSearchProgress } from "@/types/oskabulut.types";
+import { Link } from "react-router-dom";
 
-type Step = 'word-upload' | 'word-processing' | 'pdf-upload' | 'pdf-processing' | 'preview';
+type Step = 'word-upload' | 'word-processing' | 'oskabulut-search' | 'preview';
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>('word-upload');
   const [parsedTenderData, setParsedTenderData] = useState<TenderData[] | null>(null);
-  const [priceList, setPriceList] = useState<PriceListItem[] | null>(null);
   const [matchResults, setMatchResults] = useState<MatchResult[] | null>(null);
   const [finalData, setFinalData] = useState<TenderData[] | null>(null);
+  const [searchProgress, setSearchProgress] = useState<OskabulutSearchProgress | null>(null);
   const [matchStats, setMatchStats] = useState<{ 
     total: number; 
     exact: number; 
@@ -30,8 +33,19 @@ const Index = () => {
     successRate: number;
   } | null>(null);
   const { toast } = useToast();
+  const { credentials, hasCredentials } = useSettings();
 
   const handleWordFileUpload = async (file: File) => {
+    // Önce credentials kontrolü
+    if (!hasCredentials()) {
+      toast({
+        title: "Giriş Bilgileri Eksik",
+        description: "Lütfen önce Ayarlar sayfasından Oskabulut giriş bilgilerinizi kaydedin.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setCurrentStep('word-processing');
     
     try {
@@ -39,12 +53,14 @@ const Index = () => {
       
       if (result.success && result.data) {
         setParsedTenderData(result.data);
-        setCurrentStep('pdf-upload');
         
         toast({
-          title: "Başarılı!",
-          description: `${result.rowCount} satır başarıyla işlendi. Şimdi PDF birim fiyat listesini yükleyin.`,
+          title: "Word Başarıyla İşlendi!",
+          description: `${result.rowCount} satır başarıyla işlendi. Oskabulut araması başlatılıyor...`,
         });
+
+        // Otomatik olarak Oskabulut aramasını başlat
+        await handleOskabulutSearch(result.data);
       } else {
         toast({
           title: "Hata",
@@ -64,133 +80,81 @@ const Index = () => {
     }
   };
 
-  const handlePdfFileUpload = async (files: File[]) => {
-    setCurrentStep('pdf-processing');
-    
-    try {
-      console.log(`📁 ${files.length} adet PDF dosyası işleniyor...`);
-      
-      // Tüm PDF'leri parallel olarak parse et
-      const allPrices: PriceListItem[] = [];
-      
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        console.log(`\n📄 Dosya ${i + 1}/${files.length}: ${file.name}`);
-        
-        try {
-          const prices = await parsePdfPriceList(file);
-          console.log(`✅ ${file.name}: ${prices.length} fiyat bulundu`);
-          allPrices.push(...prices);
-        } catch (error) {
-          console.error(`❌ ${file.name} parse hatası:`, error);
-          toast({
-            title: `${file.name} işlenemedi`,
-            description: "Bu dosya atlandı, diğer dosyalar işlenmeye devam ediliyor.",
-            variant: "destructive",
-          });
-        }
-      }
-      
-      // Duplikaları temizle - aynı POZ NO varsa son bulananı tut
-      const uniquePrices = new Map<string, PriceListItem>();
-      for (const price of allPrices) {
-        uniquePrices.set(price.pozNo, price);
-      }
-      const prices = Array.from(uniquePrices.values());
-      
-      setPriceList(prices);
-      
-      console.log('\n📊 Tüm PDF Parse Sonuçları:');
-      console.log('- Toplam dosya sayısı:', files.length);
-      console.log('- Toplam fiyat sayısı (duplikatlı):', allPrices.length);
-      console.log('- Benzersiz fiyat sayısı:', prices.length);
-      if (prices.length > 0) {
-        console.log('- İlk 10 POZ NO:', prices.slice(0, 10).map(p => p.pozNo));
-        console.log('- Örnek kayıt:', prices[0]);
-      }
-      
-      console.log('\n📋 Word Verileri:');
-      if (parsedTenderData) {
-        console.log('- Toplam kalem sayısı:', parsedTenderData.length);
-        console.log('- İlk 10 POZ NO:', parsedTenderData.slice(0, 10).map(t => t.pozNo));
-        console.log('- Örnek kayıt:', parsedTenderData[0]);
-      }
-      
-      if (parsedTenderData && prices.length > 0) {
-        // Fiyatları eşleştir
-        const matches = matchPrices(parsedTenderData, prices);
-        setMatchResults(matches);
-        
-        console.log('\n🔗 Eşleştirme Sonuçları:');
-        console.log('- Toplam:', matches.length);
-        const exactMatches = matches.filter(m => m.matchType === 'exact');
-        const fuzzyMatches = matches.filter(m => m.matchType === 'fuzzy');
-        const noMatches = matches.filter(m => m.matchType === 'none');
-        console.log('- Tam eşleşme (POZ NO):', exactMatches.length);
-        console.log('- Benzer eşleşme (İsim):', fuzzyMatches.length);
-        console.log('- Eşleşmedi:', noMatches.length);
-        
-        if (exactMatches.length > 0) {
-          console.log('\n✅ İlk tam eşleşme örneği:', exactMatches[0]);
-        }
-        if (fuzzyMatches.length > 0) {
-          console.log('\n🔍 İlk benzer eşleşme örneği:', fuzzyMatches[0]);
-        }
-        if (noMatches.length > 0 && noMatches.length <= 20) {
-          console.log('\n❌ Eşleşmeyen POZ NO\'lar:', noMatches.map(m => `${m.tenderItem.pozNo} (${m.tenderItem.tanim.substring(0, 30)}...)`));
-        }
-        
-        // Eşleşmeleri uygula
-        const dataWithPrices = applyMatchesToTenderData(matches);
-        setFinalData(dataWithPrices);
-        
-        // İstatistikleri sakla
-        const stats = getMatchStatistics(matches);
-        setMatchStats(stats);
-        setMatchResults(matches);
-        
-        toast({
-          title: "Fiyat Eşleştirme Tamamlandı!",
-          description: `${files.length} PDF işlendi. ${stats.exact} tam eşleşme, ${stats.fuzzy} benzer eşleşme, ${stats.none} eşleşmedi. Başarı: %${stats.successRate}`,
-        });
-        
-        setCurrentStep('preview');
-      } else {
-        toast({
-          title: "Uyarı",
-          description: "PDF'den fiyat bilgisi çıkarılamadı.",
-          variant: "destructive",
-        });
-        setCurrentStep('pdf-upload');
-      }
-    } catch (error) {
-      console.error("PDF parse hatası:", error);
+  /**
+   * Oskabulut ile otomatik arama ve eşleştirme
+   */
+  const handleOskabulutSearch = async (tenderData: TenderData[]) => {
+    if (!credentials) {
       toast({
-        title: "Hata",
-        description: "PDF dosyası işlenirken bir hata oluştu.",
+        title: "Giriş Bilgileri Eksik",
+        description: "Lütfen önce Ayarlar sayfasından Oskabulut giriş bilgilerinizi kaydedin.",
         variant: "destructive",
       });
-      setCurrentStep('pdf-upload');
+      setCurrentStep('word-upload');
+      return;
     }
-  };
 
-  const handleSkipPdf = () => {
-    if (parsedTenderData) {
-      setFinalData(parsedTenderData);
-      setCurrentStep('preview');
-      
+    setCurrentStep('oskabulut-search');
+    setSearchProgress({ total: tenderData.length, completed: 0, current: '', failed: 0 });
+
+    try {
+      // Önce login yap
+      console.log('🔐 Oskabulut\'a giriş yapılıyor...');
+      const loginResult = await login(credentials);
+
+      if (!loginResult.success) {
+        toast({
+          title: "Giriş Başarısız",
+          description: "Oskabulut giriş yapılamadı. Lütfen ayarlardan bilgilerinizi kontrol edin.",
+          variant: "destructive",
+        });
+        setCurrentStep('word-upload');
+        return;
+      }
+
+      console.log('✅ Giriş başarılı, arama başlatılıyor...');
+
+      // Progress callback
+      const onProgress = (progress: OskabulutSearchProgress) => {
+        setSearchProgress(progress);
+      };
+
+      // Tüm ürünleri Oskabulut'tan ara
+      const matches = await matchWithOskabulut(tenderData, onProgress);
+      setMatchResults(matches);
+
+      // Eşleşmeleri uygula
+      const dataWithPrices = applyMatchesToTenderData(matches);
+      setFinalData(dataWithPrices);
+
+      // İstatistikleri sakla
+      const stats = getMatchStatistics(matches);
+      setMatchStats(stats);
+
       toast({
-        title: "PDF Atlandı",
-        description: "Birim fiyatlar boş bırakıldı. Excel'de manuel olarak doldurabilirsiniz.",
+        title: "Arama Tamamlandı!",
+        description: `${stats.exact} tam eşleşme, ${stats.fuzzy} benzer eşleşme, ${stats.none} eşleşmedi. Başarı: %${stats.successRate}`,
       });
+
+      setCurrentStep('preview');
+
+    } catch (error) {
+      console.error("Oskabulut search error:", error);
+      toast({
+        title: "Arama Hatası",
+        description: error instanceof Error ? error.message : "Bilinmeyen bir hata oluştu.",
+        variant: "destructive",
+      });
+      setCurrentStep('word-upload');
     }
   };
 
   const handleReset = () => {
     setParsedTenderData(null);
-    setPriceList(null);
     setMatchResults(null);
     setFinalData(null);
+    setSearchProgress(null);
+    setMatchStats(null);
     setCurrentStep('word-upload');
   };
 
@@ -219,6 +183,20 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="max-w-5xl mx-auto space-y-8">
+          {/* Credentials Check Alert */}
+          {currentStep === 'word-upload' && !hasCredentials() && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Oskabulut Giriş Bilgileri Gerekli</AlertTitle>
+              <AlertDescription>
+                Fiyat verilerini çekmek için Oskabulut hesap bilgileriniz gereklidir.
+                <Link to="/settings" className="ml-2 underline font-medium">
+                  Ayarlar sayfasından giriş yapın
+                </Link>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Step 1: Word Upload */}
           {currentStep === 'word-upload' && (
             <FileUploader onFileUpload={handleWordFileUpload} />
@@ -227,33 +205,39 @@ const Index = () => {
           {/* Step 2: Word Processing */}
           {currentStep === 'word-processing' && <ProcessingStatus />}
 
-          {/* Step 3: PDF Upload */}
-          {currentStep === 'pdf-upload' && parsedTenderData && (
-            <div className="space-y-6">
-              <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+          {/* Step 3: Oskabulut Search */}
+          {currentStep === 'oskabulut-search' && searchProgress && (
+            <Card className="p-6">
+              <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
+                    <Search className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground">Word Başarıyla İşlendi</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Oskabulut Araması Devam Ediyor</h3>
                     <p className="text-sm text-muted-foreground">
-                      {parsedTenderData.length} kalem ürün bulundu. Şimdi birim fiyatları yükleyin.
+                      {searchProgress.completed} / {searchProgress.total} ürün tamamlandı
                     </p>
                   </div>
-                  <Button onClick={handleSkipPdf} variant="outline" size="sm">
-                    Atla <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
                 </div>
-              </Card>
-              <PdfUploader onFilesUpload={handlePdfFileUpload} />
-            </div>
+                
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="w-full bg-secondary rounded-full h-2">
+                    <div 
+                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(searchProgress.completed / searchProgress.total) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Şu an aranıyor: {searchProgress.current}
+                  </p>
+                </div>
+              </div>
+            </Card>
           )}
 
-          {/* Step 4: PDF Processing */}
-          {currentStep === 'pdf-processing' && <ProcessingStatus />}
-
-          {/* Step 5: Preview & Download */}
+          {/* Step 4: Preview & Download */}
           {currentStep === 'preview' && finalData && (
             <DataPreview 
               data={finalData} 
@@ -278,14 +262,12 @@ const Index = () => {
             </div>
             
             <div className="text-center space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mx-auto">
-                <svg className="w-6 h-6 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
+                <Search className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground">Hatasız Hesaplama</h3>
+              <h3 className="font-semibold text-foreground">Oskabulut Entegrasyonu</h3>
               <p className="text-sm text-muted-foreground">
-                Formüller otomatik oluşturulur, hesaplama hataları ortadan kalkar
+                Güncel POZ fiyatları otomatik olarak Oskabulut.com'dan çekilir
               </p>
             </div>
             
