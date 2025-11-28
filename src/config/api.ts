@@ -5,7 +5,10 @@
 
 // Development: localhost:3001
 // Production: Railway backend URL
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+export const API_BASE_URL = isDevelopment 
+  ? 'http://localhost:3001'
+  : 'https://teklif360-production.up.railway.app';
 
 console.log('🔧 API Base URL:', API_BASE_URL);
-console.log('🌍 Environment:', import.meta.env.MODE);
+console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
