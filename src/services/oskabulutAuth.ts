@@ -4,9 +4,10 @@
  */
 
 import type { OskabulutCredentials, OskabulutLoginResponse } from '@/types/oskabulut.types';
+import { API_BASE_URL } from '@/config/api';
 
-// Proxy server URL
-const PROXY_URL = import.meta.env.VITE_PROXY_URL || 'http://localhost:3001';
+// Use centralized API configuration
+const PROXY_URL = API_BASE_URL;
 
 /**
  * Oskabulut.com'a login yapar (proxy üzerinden)

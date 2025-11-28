@@ -5,9 +5,10 @@
 
 import type { OskabulutSearchResult, OskabulutScraperResult } from '@/types/oskabulut.types';
 import { getSessionId } from './oskabulutAuth';
+import { API_BASE_URL } from '@/config/api';
 
-// Proxy server URL
-const PROXY_URL = import.meta.env.VITE_PROXY_URL || 'http://localhost:3001';
+// Use centralized API configuration
+const PROXY_URL = API_BASE_URL;
 
 /**
  * POZ numarasına göre arama yapar (proxy üzerinden)
