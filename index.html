@@ -19,6 +19,11 @@
 
   <body>
     <div id="root"></div>
+    <script type="module">
+      // Force production API URL - injected before app loads
+      window.__TEKLIF360_API_URL__ = 'https://teklif360-production.up.railway.app';
+      console.log('🚀 PRE-LOAD: API URL set to', window.__TEKLIF360_API_URL__);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
