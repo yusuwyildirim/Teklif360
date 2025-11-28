@@ -4,6 +4,9 @@
   "type": "module",
   "description": "Proxy server for Oskabulut.com to bypass CORS",
   "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"

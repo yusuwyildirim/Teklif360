@@ -1,0 +1,2 @@
+# Railway will detect this and use npm instead of bun
+# This prevents lockfile conflicts

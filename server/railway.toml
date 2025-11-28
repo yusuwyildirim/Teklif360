@@ -3,6 +3,7 @@
 
 [build]
   builder = "NIXPACKS"
+  buildCommand = "npm ci"
 
 [deploy]
   startCommand = "npm start"
@@ -10,7 +11,3 @@
   healthcheckTimeout = 30
   restartPolicyType = "ON_FAILURE"
   restartPolicyMaxRetries = 3
-
-[env]
-  NODE_ENV = "production"
-  PORT = "$PORT"
