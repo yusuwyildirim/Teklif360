@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "env": {
+    "VITE_API_URL": "https://teklif360-production.up.railway.app"
+  },
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://teklif360-production.up.railway.app"
+    }
+  }
+}
