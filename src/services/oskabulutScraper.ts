@@ -4,39 +4,43 @@
  */
 
 import type { OskabulutSearchResult, OskabulutScraperResult } from '@/types/oskabulut.types';
+import { getSessionId } from './oskabulutAuth';
 
-const LIBRARY_URL = 'https://www.oskabulut.com/kutuphane';
+// Proxy server URL
+const PROXY_URL = import.meta.env.VITE_PROXY_URL || 'http://localhost:3001';
 
 /**
- * POZ numarasına göre arama yapar ve sonuçları parse eder
+ * POZ numarasına göre arama yapar (proxy üzerinden)
  */
 export async function searchByPozNo(pozNo: string): Promise<OskabulutScraperResult> {
   try {
-    // Arama parametresi ile GET request
-    const searchUrl = `${LIBRARY_URL}?searchBox=${encodeURIComponent(pozNo)}`;
+    const sessionId = getSessionId();
     
-    const response = await fetch(searchUrl, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Accept': 'text/html,application/xhtml+xml,application/xml',
-      }
-    });
-
-    if (!response.ok) {
+    if (!sessionId) {
       return {
         success: false,
-        error: `HTTP ${response.status}: ${response.statusText}`,
+        error: 'Session bulunamadı. Lütfen önce giriş yapın.',
         searchTerm: pozNo
       };
     }
 
-    const html = await response.text();
-    const results = parseSearchResults(html);
+    const response = await fetch(
+      `${PROXY_URL}/api/search?query=${encodeURIComponent(pozNo)}&sessionId=${sessionId}`
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      return {
+        success: false,
+        error: data.error || 'Arama başarısız',
+        searchTerm: pozNo
+      };
+    }
 
     return {
       success: true,
-      data: results,
+      data: data.data || [],
       searchTerm: pozNo
     };
 
@@ -54,12 +58,13 @@ export async function searchByPozNo(pozNo: string): Promise<OskabulutScraperResu
  * Ürün adına göre arama yapar
  */
 export async function searchByName(name: string): Promise<OskabulutScraperResult> {
-  return searchByPozNo(name); // Aynı endpoint, farklı query
+  return searchByPozNo(name); // Aynı proxy endpoint
 }
 
 /**
  * HTML içeriğini parse ederek sonuçları çıkarır
- * XPath: //*[@id="genel-grid"]/div[3]/table/tbody/tr/td[2..7]
+ * Not: Artık backend'de parse ediliyor, bu fonksiyon kullanılmıyor
+ * @deprecated Backend'de cheerio ile parse ediliyor
  */
 export function parseSearchResults(html: string): OskabulutSearchResult[] {
   const parser = new DOMParser();

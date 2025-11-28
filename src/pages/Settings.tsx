@@ -66,13 +66,13 @@ export default function Settings() {
     setIsLoading(true);
 
     try {
-      // Önce giriş bilgilerini test et
+      // Önce giriş bilgilerini test et (proxy üzerinden)
       const loginResult = await login({ email, password });
 
       if (!loginResult.success) {
         toast({
           title: "Giriş Başarısız",
-          description: loginResult.message || "Kullanıcı bilgileri doğrulanamadı.",
+          description: loginResult.message || "Kullanıcı bilgileri doğrulanamadı. Proxy server çalışıyor mu?",
           variant: "destructive"
         });
         setIsLoading(false);
@@ -322,19 +322,18 @@ export default function Settings() {
         </Card>
 
         {/* Info Card */}
-        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20">
+        <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
           <CardContent className="pt-6">
             <h3 className="font-semibold mb-2 flex items-center gap-2">
-              ⚠️ CORS Uyarısı
+              ℹ️ Proxy Server Bilgisi
             </h3>
             <p className="text-sm text-muted-foreground">
-              Oskabulut.com'a browser'dan direkt istek atmak CORS hatası verebilir. 
-              Eğer giriş yapamıyorsanız:
+              Oskabulut.com ile iletişim için proxy server kullanılıyor. 
+              Proxy server çalışmazsa giriş yapamayabilirsiniz.
             </p>
             <ul className="text-sm text-muted-foreground list-disc list-inside mt-2 space-y-1">
-              <li>Browser extension kullanın (CORS Unblock)</li>
-              <li>Backend proxy servisi kurun</li>
-              <li>Tarayıcı konsolu hatalarını kontrol edin</li>
+              <li>Proxy URL: <code className="px-1 py-0.5 bg-black/10 dark:bg-white/10 rounded">http://localhost:3001</code></li>
+              <li>Kurulum: <code className="px-1 py-0.5 bg-black/10 dark:bg-white/10 rounded">cd server && npm install && npm start</code></li>
             </ul>
           </CardContent>
         </Card>

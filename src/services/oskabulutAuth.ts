@@ -5,48 +5,37 @@
 
 import type { OskabulutCredentials, OskabulutLoginResponse } from '@/types/oskabulut.types';
 
-const BASE_URL = 'https://www.oskabulut.com';
-const LOGIN_URL = `${BASE_URL}/kullanici-girisi`;
-const LIBRARY_URL = `${BASE_URL}/kutuphane`;
+// Proxy server URL
+const PROXY_URL = import.meta.env.VITE_PROXY_URL || 'http://localhost:3001';
 
 /**
- * Oskabulut.com'a login yapar
- * Not: Bu fonksiyon CORS nedeniyle browser'dan çalışmayabilir.
- * Production'da backend proxy veya browser extension gerekebilir.
+ * Oskabulut.com'a login yapar (proxy üzerinden)
+ * Proxy server normal bir browser gibi davranır
  */
 export async function login(credentials: OskabulutCredentials): Promise<OskabulutLoginResponse> {
   try {
-    // Form data hazırla
-    const formData = new FormData();
-    formData.append('Email', credentials.email);
-    formData.append('Password', credentials.password);
-    formData.append('RememberMe', 'false');
+    console.log('🔐 Proxy üzerinden giriş yapılıyor...');
 
-    // Login request
-    const response = await fetch(LOGIN_URL, {
+    const response = await fetch(`${PROXY_URL}/api/login`, {
       method: 'POST',
-      body: formData,
-      credentials: 'include', // Cookie'leri dahil et
       headers: {
-        'Accept': 'text/html,application/xhtml+xml,application/xml',
+        'Content-Type': 'application/json',
       },
-      redirect: 'follow'
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password
+      })
     });
 
-    // Başarılı login kontrolü
-    // Eğer /kutuphane sayfasına yönlendirildiyse başarılı
-    if (response.url.includes('/kutuphane') || response.status === 200) {
-      return {
-        success: true,
-        message: 'Giriş başarılı',
-        sessionId: extractSessionFromCookies(response)
-      };
+    const data = await response.json();
+
+    if (data.success && data.sessionId) {
+      // Session ID'yi localStorage'a kaydet
+      localStorage.setItem('oskabulut_session_id', data.sessionId);
+      console.log('✅ Giriş başarılı, session kaydedildi');
     }
 
-    return {
-      success: false,
-      message: 'Giriş başarısız. Email veya şifre yanlış.'
-    };
+    return data;
 
   } catch (error) {
     console.error('Login error:', error);
@@ -62,18 +51,13 @@ export async function login(credentials: OskabulutCredentials): Promise<Oskabulu
  */
 export async function checkSession(): Promise<boolean> {
   try {
-    const response = await fetch(LIBRARY_URL, {
-      method: 'GET',
-      credentials: 'include',
-      redirect: 'manual'
-    });
+    const sessionId = localStorage.getItem('oskabulut_session_id');
+    if (!sessionId) return false;
 
-    // Eğer login sayfasına yönlendirildiyse session geçersiz
-    if (response.status === 302 || response.url.includes('kullanici-girisi')) {
-      return false;
-    }
+    const response = await fetch(`${PROXY_URL}/api/session-check?sessionId=${sessionId}`);
+    const data = await response.json();
 
-    return response.status === 200;
+    return data.valid || false;
   } catch (error) {
     console.error('Session check error:', error);
     return false;
@@ -81,16 +65,12 @@ export async function checkSession(): Promise<boolean> {
 }
 
 /**
- * Logout yapar (varsa)
+ * Logout yapar
  */
 export async function logout(): Promise<boolean> {
   try {
-    const response = await fetch(`${BASE_URL}/cikis`, {
-      method: 'GET',
-      credentials: 'include'
-    });
-
-    return response.ok;
+    localStorage.removeItem('oskabulut_session_id');
+    return true;
   } catch (error) {
     console.error('Logout error:', error);
     return false;
@@ -98,24 +78,8 @@ export async function logout(): Promise<boolean> {
 }
 
 /**
- * Response header'larından session ID çıkarır
+ * Session ID'yi al
  */
-function extractSessionFromCookies(response: Response): string | undefined {
-  const cookies = response.headers.get('set-cookie');
-  if (!cookies) return undefined;
-
-  // ASP.NET session cookie'sini bul
-  const sessionMatch = cookies.match(/ASP\.NET_SessionId=([^;]+)/);
-  return sessionMatch ? sessionMatch[1] : undefined;
+export function getSessionId(): string | null {
+  return localStorage.getItem('oskabulut_session_id');
 }
-
-/**
- * CORS problemi için not:
- * Browser'dan direkt Oskabulut.com'a istek atmak CORS hatası verebilir.
- * Çözüm seçenekleri:
- * 1. Backend proxy servisi (Node.js/Express)
- * 2. Browser extension
- * 3. CORS proxy servisi (dikkatli kullanılmalı)
- * 
- * Development için test: Postman/Insomnia ile login flow test edilebilir
- */
