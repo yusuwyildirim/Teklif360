@@ -18,8 +18,8 @@ const allowedOrigins = [
   'http://localhost:8080', 
   'http://localhost:8081', 
   'http://localhost:5173',
-  // Add your Netlify URL here when deployed
-  // 'https://your-app.netlify.app'
+  'https://teklif360-production.up.railway.app',
+  'https://teklif360.netlify.app'
 ];
 
 app.use(cors({
