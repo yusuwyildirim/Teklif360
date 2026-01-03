@@ -1,7 +1,7 @@
 import { ProjectHistory } from "@/types/projectHistory.types";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, FileText, Calendar, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trash2, FileText, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -137,13 +137,13 @@ export const ProjectHistorySidebar = ({
                         selectedProjectId === project.id ? "text-primary/70" : "text-muted-foreground"
                       }`}>
                         <span>{project.itemCount} kalem</span>
-                        <div className="flex items-center gap-0.5">
-                          <DollarSign className="w-3 h-3" />
+                        <div className="flex items-center gap-1">
                           <span>
                             {project.totalAmount.toLocaleString("tr-TR", {
                               maximumFractionDigits: 0,
                             })}
                           </span>
+                          <span className="font-medium">TL</span>
                         </div>
                       </div>
                     </div>

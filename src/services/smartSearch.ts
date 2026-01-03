@@ -1,6 +1,6 @@
 /**
- * Smart Search Algorithm v2.0
- * Geliştirilmiş 3-level arama stratejisi
+ * Smart Search Algorithm v2.1
+ * Geliştirilmiş 3-level arama stratejisi + Önbellek
  * 
  * Level 1: POZ NO ile arama (farklı formatlar)
  * Level 2: Temizlenmiş ürün adı ile arama
@@ -9,6 +9,10 @@
 
 import { searchByPozNo, searchByName } from './oskabulutScraper';
 import type { SmartSearchResult, OskabulutSearchResult, SearchLevel } from '@/types/oskabulut.types';
+
+// ÖNBELLEK - Aynı sorguları tekrar aratmaz (hızlandırma)
+const searchCache = new Map<string, SmartSearchResult>();
+const CACHE_MAX_SIZE = 500; // Maksimum önbellek boyutu
 
 // Önemsiz kelimeler - aramadan çıkarılacak
 const STOP_WORDS = new Set([
@@ -103,6 +107,13 @@ export async function smartSearch(
   productName: string
 ): Promise<SmartSearchResult> {
   
+  // ÖNBELLEK KONTROLÜ - Aynı sorgu daha önce yapılmış mı?
+  const cacheKey = `${pozNo || ''}_${productName}`.toLowerCase().trim();
+  if (searchCache.has(cacheKey)) {
+    console.log(`[Smart Search] Önbellekten alındı: "${productName.substring(0, 30)}..."`);
+    return searchCache.get(cacheKey)!;
+  }
+  
   let attempts = 0;
 
   // LEVEL 1: POZ NO ile arama (farklı formatlarda dene)
@@ -118,18 +129,21 @@ export async function smartSearch(
         
         if (result.success && result.data && result.data.length > 0) {
           console.log(`[Smart Search] ✓ Level 1 başarılı - ${result.data.length} sonuç bulundu`);
-          return {
+          const searchResult: SmartSearchResult = {
             result: result.data[0],
             searchLevel: 'poz_no' as SearchLevel,
             searchTerm: pozVariation,
             attempts
           };
+          // Önbelleğe kaydet
+          cacheResult(cacheKey, searchResult);
+          return searchResult;
         }
       } catch (error) {
         console.warn(`[Smart Search] Level 1 hata: ${error}`);
       }
       
-      await delay(200);
+      await delay(100); // 200 -> 100ms (hızlandırma)
     }
   }
 
@@ -164,32 +178,57 @@ export async function smartSearch(
           const { match: bestMatch, score: matchScore } = findBestMatchWithScore(result.data, productName);
           const confidencePercent = Math.min(100, Math.round(matchScore));
           console.log(`[Smart Search] ✓ ${levelName} başarılı - ${result.data.length} sonuç, doğruluk: %${confidencePercent}`);
-          return {
+          const searchResult: SmartSearchResult = {
             result: bestMatch,
             searchLevel: wordCount === maxWords ? 'full_name' as SearchLevel : 'truncated' as SearchLevel,
             searchTerm: searchTerm,
             attempts
           };
+          // Önbelleğe kaydet
+          cacheResult(cacheKey, searchResult);
+          return searchResult;
         }
       } catch (error) {
         console.warn(`[Smart Search] ${levelName} hata: ${error}`);
       }
       
-      await delay(200);
+      await delay(100); // 200 -> 100ms (hızlandırma)
       
       // Maksimum 5 deneme
       if (attempts >= 5) break;
     }
   }
 
-  // Hiçbir sonuç bulunamadı
+  // Hiçbir sonuç bulunamadı - bunu da önbelleğe kaydet (tekrar aramayı önle)
   console.log(`[Smart Search] ✗ Hiçbir seviyede sonuç bulunamadı: "${productName.substring(0, 40)}..."`);
-  return {
+  const notFoundResult: SmartSearchResult = {
     result: null,
     searchLevel: 'truncated' as SearchLevel,
     searchTerm: productName,
     attempts
   };
+  cacheResult(cacheKey, notFoundResult);
+  return notFoundResult;
+}
+
+/**
+ * Önbelleğe sonuç kaydet (LRU benzeri - maksimum boyut aşılırsa eski kayıtları sil)
+ */
+function cacheResult(key: string, result: SmartSearchResult): void {
+  if (searchCache.size >= CACHE_MAX_SIZE) {
+    // En eski kaydı sil (ilk eklenen)
+    const firstKey = searchCache.keys().next().value;
+    if (firstKey) searchCache.delete(firstKey);
+  }
+  searchCache.set(key, result);
+}
+
+/**
+ * Önbelleği temizle (isteğe bağlı)
+ */
+export function clearSearchCache(): void {
+  searchCache.clear();
+  console.log('[Smart Search] Önbellek temizlendi');
 }
 
 /**
@@ -281,8 +320,8 @@ export async function batchSmartSearch(
       
       // Çok fazla ardışık hata varsa daha uzun bekle
       if (consecutiveErrors >= 3) {
-        console.warn('[Batch Search] Too many consecutive errors, waiting 2 seconds...');
-        await delay(2000);
+        console.warn('[Batch Search] Too many consecutive errors, waiting 1.5 seconds...');
+        await delay(1500); // 2000 -> 1500ms
         consecutiveErrors = 0;
       }
       
@@ -295,11 +334,11 @@ export async function batchSmartSearch(
       });
     }
 
-    // Her 10 aramada bir biraz daha uzun bekle
-    if (i > 0 && i % 10 === 0) {
-      await delay(400);
+    // Her 15 aramada bir biraz daha uzun bekle (10 -> 15)
+    if (i > 0 && i % 15 === 0) {
+      await delay(200); // 400 -> 200ms
     } else {
-      await delay(250);
+      await delay(100); // 250 -> 100ms (hızlandırma)
     }
   }
 
