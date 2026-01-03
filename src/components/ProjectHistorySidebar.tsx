@@ -131,7 +131,7 @@ export const ProjectHistorySidebar = ({
                         selectedProjectId === project.id ? "text-primary/80" : "text-muted-foreground"
                       }`}>
                         <Calendar className="w-3 h-3" />
-                        <span>{formatDate(project.date)}</span>
+                        <span>{formatDate(project.createdAt || project.date)}</span>
                       </div>
                       <div className={`flex items-center gap-3 mt-1.5 text-xs ${
                         selectedProjectId === project.id ? "text-primary/70" : "text-muted-foreground"

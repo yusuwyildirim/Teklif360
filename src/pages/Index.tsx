@@ -5,7 +5,7 @@ import { ProcessingStatus } from "@/components/ProcessingStatus";
 import { Header } from "@/components/Header";
 import { ProjectHistorySidebar } from "@/components/ProjectHistorySidebar";
 import { ProjectNameDialog } from "@/components/ProjectNameDialog";
-import { FileText, Search, AlertCircle, X } from "lucide-react";
+import { FileText, Search, AlertCircle, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,7 +14,8 @@ import { matchWithOskabulut, applyMatchesToTenderData, getMatchStatistics } from
 import { login } from "@/services/oskabulutAuth";
 import { useSettings } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/use-toast";
-import { useProjectHistory } from "@/hooks/useProjectHistory";
+import { useProjectHistory } from "@/hooks/useProjectHistorySupabase";
+import { useAuth } from "@/contexts/AuthContext";
 import type { ProjectHistory } from "@/types/projectHistory.types";
 import type { TenderData, MatchResult } from "@/types/tender.types";
 import type { OskabulutSearchProgress } from "@/types/oskabulut.types";
@@ -44,7 +45,8 @@ const Index = () => {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const { toast } = useToast();
   const { credentials, hasCredentials } = useSettings();
-  const { projects, saveProject, deleteProject, getProject } = useProjectHistory();
+  const { projects, saveProject, deleteProject, getProject, loading: projectsLoading } = useProjectHistory();
+  const { user, signOut } = useAuth();
 
   const handleWordFileUpload = async (file: File) => {
     // Önce credentials kontrolü
@@ -214,31 +216,24 @@ const Index = () => {
     setPendingFile(null);
   };
 
-  const handleSaveProject = (data: TenderData[]) => {
+  const handleSaveProject = async (data: TenderData[]) => {
     if (!currentProjectName) return;
 
-    const totalAmount = data.reduce((sum, item) => sum + (item.tutar || 0), 0);
-
-    const project: ProjectHistory = {
-      id: Date.now().toString(),
-      name: currentProjectName,
-      date: new Date().toISOString(),
-      fileName: currentFileName,
-      itemCount: data.length,
-      totalAmount,
-      data: data.map(item => ({
-        siraNo: item.siraNo,
-        pozNo: item.pozNo,
-        tanim: item.tanim,
-        birim: item.birim,
-        miktar: item.miktar,
-        birimFiyat: item.birimFiyat || 0,
-        tutar: item.tutar || 0,
-      })),
-    };
-
-    saveProject(project);
-    setSelectedProjectId(project.id);
+    const savedProject = await saveProject(currentProjectName, currentFileName, data);
+    
+    if (savedProject) {
+      setSelectedProjectId(savedProject.id);
+      toast({
+        title: "Proje Kaydedildi",
+        description: `"${currentProjectName}" buluta kaydedildi.`,
+      });
+    } else {
+      toast({
+        title: "Kayıt Hatası",
+        description: "Proje kaydedilemedi. Lütfen tekrar deneyin.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSelectProject = (projectId: string) => {
@@ -256,15 +251,17 @@ const Index = () => {
     }
   };
 
-  const handleDeleteProject = (projectId: string) => {
-    deleteProject(projectId);
-    if (selectedProjectId === projectId) {
-      handleReset();
+  const handleDeleteProject = async (projectId: string) => {
+    const success = await deleteProject(projectId);
+    if (success) {
+      if (selectedProjectId === projectId) {
+        handleReset();
+      }
+      toast({
+        title: "İşlem Silindi",
+        description: "İşlem geçmişten silindi.",
+      });
     }
-    toast({
-      title: "İşlem Silindi",
-      description: "İşlem geçmişten silindi.",
-    });
   };
 
   return (

@@ -209,15 +209,32 @@ function parseMiktar(text: string): number {
     // Sadece virgül varsa
     if (commaCount === 1) {
       // Tek virgül - ondalık mı binlik mi?
-      // Virgülden sonra 3 hane varsa ve daha fazla hane yoksa binlik olabilir
       const parts = cleaned.split(',');
       if (parts.length === 2) {
+        const beforeComma = parts[0];
         const afterComma = parts[1];
-        if (afterComma.length === 3 && /^\d+$/.test(afterComma) && parts[0].length <= 3) {
-          // 3 hane ve sol taraf küçükse binlik (1,250)
-          cleaned = cleaned.replace(/,/g, '');
+        
+        // ÖNEMLİ: Virgülden önce "0" varsa kesinlikle ondalık sayı (0,415 → 0.415)
+        if (beforeComma === '0' || beforeComma === '') {
+          cleaned = cleaned.replace(',', '.');
+        }
+        // Virgülden sonra 3 hane VE sol taraf 4+ hane ise binlik (1234,567 -> muhtemelen değil)
+        // Virgülden sonra 3 hane VE sol taraf 1-3 hane ise binlik olabilir (1,250)
+        else if (afterComma.length === 3 && /^\d+$/.test(afterComma) && beforeComma.length <= 3 && parseInt(beforeComma) >= 1) {
+          // Ama sayı 1000'den küçükse ondalık olma ihtimali yüksek
+          // 0,079 veya 0,415 gibi durumlar yukarıda yakalandı
+          // 1,250 gibi durumlar binlik olabilir ama...
+          // Daha güvenli: beforeComma tek haneli değilse binlik say
+          if (beforeComma.length > 1) {
+            cleaned = cleaned.replace(/,/g, '');
+          } else {
+            // Tek haneli + 3 hane (1,250) - İngilizce binlik formatı olabilir
+            // Ama Türkçe belgelerde genelde 1,25 gibi yazılır
+            // Güvenli ol: ondalık olarak kabul et
+            cleaned = cleaned.replace(',', '.');
+          }
         } else {
-          // Ondalık ayracı (Türkçe)
+          // Ondalık ayracı (Türkçe): 0,5 veya 12,75 veya 0,079
           cleaned = cleaned.replace(',', '.');
         }
       }

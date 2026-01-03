@@ -1,0 +1,294 @@
+
+
+BİRİM FİYAT TEKLİF CETVELİ
+İhale Kayıt Numarası (İKN) :
+
+A	B
+Sıra No	İş Kalemi No	İş Kaleminin Adı ve Kısa Açıklaması	Birimi	Miktarı	Teklif Edilen Birim Fiyat	Tutarı
+1	15.120.1101	Makine ile her derinlik ve her genişlikte yumuşak ve sert toprak kazılması (derin kazı)	metreküp	1.500		
+2	15.125.1004	Çakıl temin edilerek, makine ile serme, sulama ve sıkıştırma yapılması	metreküp	165		
+3	15.125.1005	Kum temin edilerek, drenaj yapılması	metreküp	130		
+4	15.125.1006	Çakıl temin edilerek, drenaj yapılması	metreküp	130		
+5	15.150.1003	Beton santralinde üretilen veya satın alınan ve beton pompasıyla basılan, C 16/20 basınç dayanım sınıfında, gri renkte, normal hazır beton dökülmesi (beton nakli dahil)	metreküp	80		
+6	15.150.1006	Beton santralinde üretilen veya satın alınan ve beton pompasıyla basılan, C 30/37 basınç dayanım sınıfında, gri renkte, normal hazır beton dökülmesi (beton nakli dahil)	metreküp	800		
+7	15.160.1003	Ø 8- Ø 12 mm nervürlü beton çelik çubuğu, çubukların kesilmesi, bükülmesi ve yerine konulması	ton	40		
+8	15.160.1004	Ø 14- Ø 28 mm nervürlü beton çelik çubuğu, çubukların kesilmesi, bükülmesi ve yerine konulması.	ton	50		
+9	15.180.1001	Ahşaptan seri kalıp yapılması	metrekare	200		
+10	15.180.1003	Plywood ile düz yüzeyli betonarme kalıbı yapılması	metrekare	2.500		
+11	15.185.1005	Çelik borudan kalıp iskelesi yapılması (0,00-4,00 m arası)	metreküp	4.500		
+12	15.185.1013	Ön yapımlı bileşenlerden oluşan tam güvenlikli, dış cephe iş iskelesi yapılması. (0,00-51,50 m arası)	metrekare	830		
+13	15.200.1002	Bodrum perdelerinde su yalıtımı ve izolasyon pimi ile uygulanmış ısı yalıtımı üzerine HDPE esaslı drenaj ve koruma levhası temini ve yerine döşenmesi (200<=basınç dayanımı<250 KN/m2)	metrekare	200		
+14	15.204.1004	Ø 200 mm anma çaplı, PVC esaslı koruge drenaj borusunun temini ve yerine döşenmesi	metre	200		
+15	15.210.1004	Ocak taşı ile blokaj yapılması	metreküp	20		
+16	15.220.1012	100 mm kalınlığında yatay delikli tuğla (200 x 100 x 200 mm) ile duvar yapılması	metrekare	200		
+17	15.220.1014	135 mm kalınlığında yatay delikli tuğla (190 x 135 x 190 mm) ile duvar yapılması	metrekare	1.200		
+18	15.220.1016	200 mm kalınlığında yatay delikli tuğla (250 x 200 x 250 mm) ile duvar yapılması	metrekare	300		
+19	15.245.1002	250 gr/m² ağırlıkta geotekstil keçe serilmesi	metrekare	30		
+20	15.250.1011	200 kg çimento dozlu tesviye tabakası yapılması	metrekare	1.500		
+21	15.255.1002	3 mm kalınlıkta plastomer esaslı (-10 °C soğukta bükülmeli) cam tülü taşıyıcılı ve 3 mm kalınlıkta plastomer esaslı (-10 °C soğukta bükülmeli) polyester keçe taşıyıcılı polimer bitümlü örtüler ile iki kat su yalıtımı yapılması	metrekare	1.000		
+22	15.270.1002	Elastomerik reçine esaslı sıvı plastik kaplama malzemesi ile file takviyeli olarak, 2 kat halinde toplam 1 mm kalınlıkta su yalıtımı yapılması	metrekare	100		
+23	15.275.1111	250/350 kg çimento dozlu kaba ve ince harçla sıva yapılması (dış cephe sıvası)	metrekare	700		
+24	15.275.1115	350 kg çimento dozlu harçla tek kat ince sıva yapılması	metrekare	200		
+25	15.275.1116	250 kg çimento dozlu harç ile kaba sıva yapılması	metrekare	1.500		
+26	15.275.1117	200 kg Çimento ve Kireç karşımı harç ile kaba sıva yapılması (iç cephe)	metrekare	3.000		
+27	15.275.9992	Metal kapı kasa arkalarının beton harcı ile doldurulması	metrekare	40		
+28	15.280.1010	Perlitli sıva alçısı ve saten alçı harçlarının karışımı ile ortalama 5 mm kalınlıkta düzeltme sıvası yapılması (Kaba sıva, brüt beton yüzeyler, perlitli alçı yüzeyler vb. yüzeylere)	metrekare	3.000		
+29	15.280.1011	Saten alçı kaplaması yapılması (ortalama 1 mm kalınlık)	metrekare	3.000		
+30	15.300.1001	Ahşaptan oturtma çatı yapılması (çatı örtüsü altı tahta kaplamalı)	metrekare	600		
+31	15.300.1006	Çatı üzerine osb/3 kaplama yapılması	metrekare	50		
+32	15.305.1003	Yan ve üst kenarından kenetlenebilen kiremit ile çatı örtüsü yapılması (Sızdırmazlık Sınıfı: Grup 1) (150 donma-çözülme çevrimine dayanıklı) (2 Latalı sistem)	metrekare	600		
+33	15.305.1005	Mahya kiremitleri ile mahya yapılması (Sızdırmazlık Sınıfı: Grup 1) (150 donma-çözülme çevrimine dayanıklı)	metre	100		
+34	15.310.1201	14 nolu çinko levhadan eğimli çatı deresi yapılması ve yerine konulması	metre	25		
+35	15.310.1205	12 nolu çinkodan sıva eteği baca kenarı yapılması	metre	50		
+36	15.315.1003	Ø 125 mm çapında bir ucu muflu sert PVC yağmur borusu temini ve yerine tesbiti	metre	60		
+37	15.315.1101	0.50 mm kalınlıkta, sıcak daldırma galvaniz üzeri boyalı düz sacdan eksiz oluk yapılması ve yerine montajı (Sac genişiliği toplam 30 cm)	metre	100		
+38	15.330.1006	Eğimli çatılarda, çatı örtüsü altına, 3 mm kalınlıkta elastomer esaslı, cam tülü taşıyıcılı polimer bitümlü örtü (-20°C soğukta bükülmeli) ile su yalıtımı yapılması	metrekare	780		
+39	15.341.1022	6 cm kalınlıkta yüzeye dik çekme mukavemeti en az 100 kPa (TR100) grafit/karbon esaslı ekspande polistren (EPS) levhalar ile dış duvarlarda dıştan ısı yalıtımı ve üzerine ısı yalıtım sıvası yapılması (Mantolama)	metrekare	700		
+40	15.341.2081	6 cm kalınlıkta 0.030<Isıl iletkenlik katsayısı <= 0.035 W/(m.K) olan levhalar (XPS - 300 Kpa basınç dayanımlı) ile toprak temaslı temel perde ve duvarlarında su yalıtımı üzerine ısı yalıtımı yapılması	metrekare	100		
+41	15.341.4005	Çatı arasına döşeme üzerine uygulamalar için, 0,035<=Isıl iletkenliği < 0,040W/(m.K) olan, 16 cm kalınlıkta kaplamasız camyünü şilte ve üzerine su buharı geçişine açık su yalıtım örtüsü serilmesi	metrekare	550		
+42	15.375.1053	40 x 40 cm anma ebatlarında, her türlü desen ve yüzey özelliğinde, ı.kalite, renkli seramik yer karoları ile 3 mm derz aralıklı döşeme kaplaması yapılması (karo yapıştırıcısı ile)	metrekare	200		
+43	15.380.1055	(25 x 33 cm) veya (25 x 40 cm) anma ebatlarında, her türlü desen ve yüzey özelliğinde, ı.kalite, renkli seramik duvar karoları ile 3 mm derz aralıklı duvar kaplaması yapılması (karo yapıştırıcısı ile)	metrekare	490		
+44	15.385.1028	60 x 60 cm anma ebatlarında, her türlü desen ve yüzey özelliğinde, ı.kalite, renkli, sırlı porselen karo ile 3 mm derz aralıklı döşeme kaplaması yapılması (karo yapıştırıcısı ile)	metrekare	1.020		
+45	15.405.1011	Karosiman terrazo karo ile dış mekan döşeme kaplaması yapılması (Kırılma Dayanımı Şartları (Sınıf 1) Eğilme dayanımı minimum 2,8 Mpa, Aşınma direnç sınıfı (2-G), Yüzey alanı <= 1600 cm², yivli-yivsiz, her renkte)	metrekare	100		
+46	15.410.1112	2 cm kalınlığında renkli mermer levha ile döşeme kaplaması yapılması (2 cm x 30-40-50 cm x serbest boy) (honlu ve cilalı hariç her türlü yüzey işlemli)	metrekare	10		
+47	15.410.1314	Renkli mermer levha ile merdiven basamağı kaplaması yapılması (basamak 3 cm, rıht 2 cm kalınlığında) (honlu ve cilalı hariç her türlü yüzey işlemli)	metre	80		
+48	15.410.1412	3 cm kalınlığında beyaz mermer levha ile dış denizlik yapılması (3 cm x 30-40-50 cm x serbest boy) (honlu ve cilalı hariç her türlü yüzey işlemli)	metrekare	20		
+49	15.410.1512	3 cm kalınlığında beyaz mermer levha ile parapet yapılması (3 cm x 30-40-50 cm x serbest boy) (honlu ve cilalı hariç her türlü yüzey işlemli)	metrekare	10		
+50	15.410.1612	3 cm kalınlığında beyaz mermer levha ile harpuşta yapılması (3 cm x 30-40-50 cm x serbest boy) (honlu ve cilalı hariç her türlü yüzey işlemli)	metrekare	4		
+51	15.415.1112	2 cm kalınlığında koyu renkli traverten levha ile döşeme kaplaması yapılması (2 cm x 30-40-50 cm x serbest boy) (honlu ve cilalı hariç her türlü yüzey işlemli)	metrekare	55		
+52	15.415.1214	2 cm kalınlığında koyu renkli traverten levha ile duvar kaplaması yapılması (2 cm x 30-40-50 cm x serbest boy) (honlu ve cilalı hariç her türlü yüzey işlemli)	metrekare	110		
+53	15.415.1314	Koyu renkli traverten levha ile merdiven basamağı kaplaması yapılması (basamak 3 cm, rıht 2 cm kalınlığında) (honlu ve cilalı hariç her türlü yüzey işlemli)	metre	10		
+54	15.420.1012	4 cm kalınlığında mucartalı andezit levha ile döşeme kaplaması yapılması (30 cm x serbest boy)	metrekare	350		
+55	15.435.1213	50 x 20 x 10 cm boyutlarında normal çimentolu buhar kürlü beton bordür döşenmesi (pahlı, her renk)	metre	100		
+56	15.450.1015	Her genişlikte kargir duvar üzerine mozayik kaplı beton harpuşta yapılması (normal çimentolu)	metrekare	3		
+57	15.455.1001	Plastik doğrama imalatı yapılması ve yerine konulması (sert pvc doğrama profillerinden her çeşit kapı, pencere, kaplama ve benzeri imalat)	kilogram	2.000		
+58	15.460.1008	Renkli-mat ve eloksallı ısı yalıtımlı alüminyum doğrama imalatı yapılması ve yerine konulması	kilogram	110		
+59	15.465.1001	Gömme iç kapı kanadı kilidinin yerine takılması (geniş tip) ( Ahşap, Metal. Plastik )	adet	40		
+60	15.465.1007	Silindirli traşlı dış kapı kilidinin yerine takılması ( Ahşap, Metal. Plastik )	adet	8		
+61	15.465.1008	Kapı kolu ve aynalarının yerine takılması (kromajlı) ( Ahşap, Metal. Plastik )	adet	40		
+62	15.465.1010	Menteşenin yerine takılması ( Ahşap, Metal. Plastik )	adet	120		
+63	15.465.1118	Ayarlı menteşe (çift) plastik kaplamalının yerine takılması	adet	100		
+64	15.465.1201	İspanyolet takımının yerine takılması (kol dahil) 100 cm'e kadar, 2 kavramalı ( Ahşap, Metal ve Plastik ) ( İdarenin yazılı izni ile uygulanır. )	adet	40		
+65	15.465.1204	Vasistas ispanyolet takımının yerine takılması (kol, makas dahil) ( Ahşap, Metal ve Plastik ) ( İdarenin yazılı izni ile uygulanır. )	adet	10		
+66	15.470.1014	Pvc ve alüminyum doğramaya profil ile 4+4 mm kalınlıkta 16 mm ara boşluklu çift camlı pencere ünitesi takılması	metrekare	80		
+67	15.490.1003	Ac4 sınıf 32 laminat yer kaplaması ile döşeme kaplaması yapılması (süpürgelik dahil)	metrekare	50		
+68	15.510.1104	Laminat kaplamalı, iki yüzü odun lifinden yapılmış levhalarla (mdf) presli, delikli yonga levhalarla dolgulu iç kapı kanadı yapılması, yerine takılması	metrekare	80		
+69	15.525.1003	Pvc çerçeveli, plastik telden sineklik yapılması ve yerine konulması (takılır-sökülür)	metrekare	90		
+70	15.540.1111	Demir yüzeylere korozyona karşı iki kat antipas boya yapılması	metrekare	150		
+71	15.540.1523	Saten alçılı ve alçıpanel yüzeylere astar uygulanarak iki kat Su bazlı Silikonlu Mat İç Cephe Boyası (Örtücülük Sınıf:2, YOD:Sınıf 2, Parlaklık:G3) yapılması (iç cephe)	metrekare	3.000		
+72	15.540.1605	Brüt beton, sıvalı veya eski boyalı yüzeylere, astar uygulanarak Silikon esaslı su bazlı Dış Cephe Boyası (V1:W3:G3) yapılması (dış cephe)	metrekare	1.000		
+73	15.550.1001	Kare ve dikdörtgen profillerle pencere ve kapı yapılması ve yerine konulması	kilogram	550		
+74	15.550.1003	2,00 mm kalınlığında sıcak haddelenmiş sacdan bükme kapı kasası yapılması ve yerine konulması	kilogram	1.000		
+75	15.550.1202	Lama ve profil demirlerden çeşitli demir işleri yapılması ve yerine konulması	kilogram	500		
+76	43.560.1101	Prefabrik parsel bacası beton taban elemanının yerleştirilmesi (h: 0,50 m, iç ebadı: 0,80 x 0,80 m, et kalınlığı: 0,10 m, baca elemanları arası birleşim yerleri 600 dozlu harçla)	adet	5		
+77	43.560.1102	Prefabrik parsel bacası beton gövde elemanının yerleştirilmesi (h: 0,50 m, iç ebadı: 0,80 x 0,80 m, et kalınlığı: 0,10 m, baca elemanları arası birleşim yerleri 600 dozlu harçla)	adet	30		
+78	43.560.1105	Çerçevesiz betonarme kapağın parsel bacası üzerine yerleştirilmesi (0,50 x 1,00 x 0,10 m, C35/45 betonu ile yapılmış)	adet	10		
+79	48.550.2001	Paslanmaz Çelik Merdiven Korkuluğu ve Küpeştesi Yapılması	kilogram	200		
+80	48.700.1405	Tuvalet kapılarına alüminyum bant yapılması	metretül	30		
+81	77.165.1010	3 cm. RENKLİ MERMER PLAKLARLA TEZGAH ÜSTÜ KAPLAMASI YAPILMASI	metrekare	10		
+82	35.100.2202	0,10 - 0,20m2'ye kadar (0,20 m2 dahil) gömme tip galvaniz sac tablolar	adet	1		
+83	35.100.6101	Sac pano 800 mm. genişliğinde (TS EN 61439-1/2)	adet	1		
+84	35.100.6501	Gömme tip sac tablo 0.05-0.10 m2. (0,10 m2 dahil) (ts en 61439-1/2 )	adet	2		
+85	35.100.6502	Gömme tip sac tablo 0.10-0.20 m2. (0,20 m2 dahil) (ts en 61439-1/2 )	adet	2		
+86	35.100.6504	Gömme tip sac tablo 0.30-0.40 m2. (0,40 m2 dahil) (ts en 61439-1/2 )	adet	3		
+87	35.100.7202	Halojensiz alev geciktirici tip sıva altı tablo 6 otomatik sigortalık	adet	20		
+88	35.105.1110	16 A.'e kadar anahtarlı otomatik sigorta (en az 3kA) (TS 5018-1 EN 60898-1)	adet	60		
+89	35.105.1111	25 A.'e kadar anahtarlı otomatik sigorta (en az 3kA) (TS 5018-1 EN 60898-1)	adet	40		
+90	35.105.1130	Üç fazlı 16 A.'e kadar anahtarlı otomatik sigorta (en az 3kA) (TS 5018-1 EN 60898-1)	adet	2		
+91	35.105.1131	Üç fazlı 25 A'e kadar anahtarlı otomatik sigorta (en az 3kA) (TS 5018-1 EN 60898-1)	adet	4		
+92	35.105.1210	16 A.'e kadar anahtarlı otomatik sigorta (en az 6kA)	adet	70		
+93	35.105.1211	25 A.'e kadar anahtarlı otomatik sigorta (en az 6kA)	adet	80		
+94	35.105.1341	Üç fazlı nötr kesmeli 25 A'e kadar anahtarlı otomatik sigorta (en az 10kA)	adet	4		
+95	35.105.1342	Üç fazlı nötr kesmeli 40 A'e kadar anahtarlı otomatik sigorta (en az 10kA)	adet	4		
+96	35.105.1343	Üç fazlı nötr kesmeli 63 A'e kadar anahtarlı otomatik sigorta (en az 10kA)	adet	3		
+97	35.110.1502	4 x 80 A'e kadar Icu: 35 kA, I1: (0,8-1)In, 4 kutuplu, 400V AC'de en az Icu: 35 kA, termik koruma ayarlı, manyetik koruma sabit, Kompakt tip termik ve manyetik koruyuculu şalterler	adet	2		
+98	35.110.1503	4 x 100 A'e kadar Icu: 35 kA, I1: (0,8-1)In, 4 kutuplu, 400V AC'de en az Icu: 35 kA, termik koruma ayarlı, manyetik koruma sabit, Kompakt tip termik ve manyetik koruyuculu şalterler	adet	1		
+99	35.110.1505	4 x 160 A'e kadar Icu: 35 kA, I1: (0,8-1)In, 4 kutuplu, 400V AC'de en az Icu: 35 kA, termik koruma ayarlı, manyetik koruma sabit, Kompakt tip termik ve manyetik koruyuculu şalterler	adet	1		
+100	35.110.1602	4 x 80 A'e kadar Icu: 50 kA, I1: (0,8-1)In,4 kutuplu, 400V AC'de en az Icu: 50 kA, termik koruma ayarlı, manyetik koruma sabit şalter, Kompakt tip termik ve manyetik koruyuculu şalterler	adet	1		
+101	35.110.2520	En fazla 4 x 100 A, 4 kutuplu, 400 V AC'de en az Icu: 35 kA, Kompakt sabit tip termik ve manyetik koruyuculu şalter	adet	1		
+102	35.115.1023	Kaçak akım koruma şalteri 4*80 a.e kadar(30ma) (Koruma Sınıfı: AC)	adet	7		
+103	35.115.1063	Kaçak akım koruma şalteri 4*80 a.e kadar(300ma) (Koruma Sınıfı: AC)	adet	1		
+104	35.120.1455	İşaret lambası 500 v.a kadar	adet	30		
+105	35.125.1104	Kuru tip koruyucusuz kontaktör 3*40 a. (TS EN 60947-4-1)	adet	2		
+106	35.125.1304	Kuru tip termik koruyuculu kontaktör 3*40 a.	adet	2		
+107	35.125.1701	Elektronik motor koruma cihazı 3*12 a.	adet	2		
+108	35.125.1751	Zaman rölesi 0-60 san.	adet	2		
+109	35.135.3201	Üç fazlı zaman tarifeli elektronik tip aktif sayaçlar En az 5(100) A, 3x230/400 V	adet	1		
+110	35.140.3225	4x16 mm2 YVV (NYY) tipi 1 KV yeraltı kabloları ile kolon ve besleme hattı tesisi	metre	100		
+111	35.140.3226	4x25 mm2 YVV (NYY) tipi 1 KV yeraltı kabloları ile kolon ve besleme hattı tesisi	metre	50		
+112	35.140.3229	4x70 mm2 YVV (NYY) tipi 1 KV yeraltı kabloları ile kolon ve besleme hattı tesisi	metre	125		
+113	35.150.1404	1x6 mm2 kesitinde H07Z, H07Z1 tipi kablo (enaz 300/500 V)	metre	30		
+114	35.150.1405	1x10 mm2 kesitinde H07Z, H07Z1 tipi kablo (enaz 300/500 V)	metre	50		
+115	35.150.1562	4x4 mm2 NHXMH tipi halojensiz alev iletmeyen izoleli çok damarlı kablolar ile besleme hattı tesisi	metre	80		
+116	35.150.1563	4x6 mm2 NHXMH tipi halojensiz alev iletmeyen izoleli çok damarlı kablolar ile besleme hattı tesisi	metre	60		
+117	35.150.1564	4x10 mm2 NHXMH tipi halojensiz alev iletmeyen izoleli çok damarlı kablolar ile besleme hattı tesisi	metre	50		
+118	35.150.3120	2x1.5re N2XHFE 180 tipi aleve dayanıklı 0,6/1kV kablolar	metre	80		
+119	35.160.3201	Halogenfree kablo ile güvenlik hatlı normal sorti	adet	40		
+120	35.160.3202	Halogenfree kablo ile güvenlik hatlı komutator sorti	adet	20		
+121	35.160.3204	Halogenfree kablo ile güvenlik hatlı paralel sorti	adet	40		
+122	35.160.3401	Halogenfree kablo ile güvenlik hatlı priz sortisi.	adet	100		
+123	35.160.6504	Ø 110 mm PE kablo muhafaza koruge boru	metre	100		
+124	35.170.1105	Sıva üstü, min. 60x60 ebatlarında LED li tavan armatürü (ışık akısı en az 3300 lm, armatür ışıksal verimi en az 100 lm/w olan)	adet	100		
+125	35.170.1801	LED glop armatür (alüminyum gövdeli) ışık akısı en az 1800 lm, armatür ışıksal verimi en az 100 lm/w (en az IP 40 koruma derecesine sahip olan)	adet	30		
+126	35.185.1811	Bakalitten 3 fazlı fiş priz ve montajı 3*25 a.	adet	4		
+127	35.185.1812	Bakalitten 3 fazlı fiş priz ve montajı 3*60 a.	adet	4		
+128	35.190.1704	Data prizi cat 5e veya cat 6e rj-45 (8 kontaklı) (22,5 x 45 mm)	adet	10		
+129	35.415.1111	8 Bölgeye kadar (dahil) Konvansiyonel tip yangın ihbar santralı ve montajı	adet	1		
+130	35.415.1400	Konvansiyonel yangın ihbar butonu ve montajı	adet	6		
+131	35.415.1430	Konvansiyonel sabit sıcaklık detektörü ve montajı	adet	5		
+132	35.415.1450	Konvansiyonel optik duman detektörü ve montajı	adet	35		
+133	35.415.1580	Dahili tip flaşörlü elektronik yangın ihbar sireni	adet	2		
+134	35.481.1160	10/24 Multiswitch Uydu Santrali	adet	1		
+135	35.481.1220	En az 100 cm ofset çanak anten	adet	2		
+136	35.481.1350	8 çıkışlı (octo) LNB	adet	2		
+137	35.481.1510	8 way splitter (5-2400 MHz)	adet	3		
+138	35.505.2030	U/UTP cat6 bakır data kablo	metre	300		
+139	35.510.2000	Telefon tesisatı sortisi	adet	40		
+140	35.515.1001	Jh (st) halojensiz yangın alarm kabloları 1x2x0.8+0.8 mm2	metretül	200		
+141	35.750.3002	Bina ihata iletkeni 30x3,5 mm ebadında şartnamesine uygun, min 70µ çinko ile kaplanmış galvanizli çelik lama	metre	105		
+142	35.750.4002	Toprak elektrodu (çubuk) elektrolitik bakır	metre	15		
+143	25.100.2010	Antibakteriyel 40x50 cm Tezgah altı veya üstü oval lavabo	adet	10		
+144	25.100.2012	Antibakteriyel lavabo 45x55 cm Yarım ayaklı Tk.	adet	5		
+145	25.102.1601	Birinci sınıf(batarya TS EN 200 veya TS EN 817'ye uygun,sifon TS-EN 274-1-2-3)gömme tip batarylı,(lavabo üzerne monte edlir tipve pirinçtn kromajlı ara muslklrı ve bağlantı borulrı dahil)özel lastik taslı kumndsız sifonlu lavabo tesisatı	takım	15		
+146	25.104.1002	Takriben 40x60 cm ayna (TS EN 1036)	adet	5		
+147	25.106.2101	Antibakteriyel etajer fayans 50x10 cm ekstra sınıf (TS 13420)	adet	15		
+148	25.108.2101	Antibakteriyel alaturka hela taşı takriben 50x60 cm ekstra sınıf plastik sifonlu (TS 13420)	adet	5		
+149	25.110.1003	Basınçlı yıkayıcılı alaturka hela tesisatı	takım	5		
+150	25.112.1270	Gömme rezervuarlı alafranga tuvalet seti	takım	15		
+151	25.125.2101	Takriben 80x80x10 cm sırlı seramikten duş teknesi (TS EN 14527) (ekstra kalite)	adet	15		
+152	25.126.1110	Köşe Tipi (Kare veya Dikdörtgen) Temperli Camdan Duşakabin	metrekare	10		
+153	25.127.1002	Gömme baş ve el duşlu banyo takımı;el duşu ve buna su veren klapeli gömme banyo batarya takımı, banyo doldurma ağızlı (TS EN 200 veya TS EN 817)	takım	15		
+154	25.130.1102	1/2 inç uzun musluk, süzgeçli rozet dahil (TS EN 200'e uygun)	adet	5		
+155	25.130.1303	1/2" Kromajlı Çamaşır - Bulaşık Musluğu, seramik salmastralı, musluk rozeti dahil. (TS EN 200'e uygun)	adet	10		
+156	25.135.2002	Paslanmaz çelik kağıtlık	adet	10		
+157	25.135.3001	Askı fayans 10x16cm	adet	10		
+158	25.138.1022	Plastikten 15x15 cm Ø50 çıkışlı yer süzgecinin işyerinde temini ve yerine montajı (TS-327'ye uygun)	adet	15		
+159	25.142.1104	Soğuk su sayacı ø 50 mm. flanşlı (TS EN ISO 4064-1’e uygun)	adet	5		
+160	25.150.1209	15,00 m3 prizmatik modüler paslanmaz çelik su deposu	adet	2		
+161	25.160.1203	İki pompalı düşey milli santrifüj pompalı tam otomatik paket hidrofor (debi: 10- 30 m³/h, basınç: 30-60 mss)	adet	2		
+162	25.165.3001	Tam otomatik su yumuşatma cihazı 1 m3/sa	adet	2		
+163	25.170.1105	Soğuk ve sıcak su kollektör borusu 6" 150Ø mm.	metre	4		
+164	25.170.1211	Termometre,hidrometre ve boşaltma ağızları	adet	6		
+165	25.175.1414	3000 lt–Minimum sıcak su debisi 3330 lt/h ( 58,0 kPa) tek serpantinli dik boyler (TS EN13445-3, TS EN 12897,TS736)	adet	2		
+166	25.214.1009	100 KW - 114,9 KW arası duvara asılabilen gaz yakıtlı yoğuşmalı kazanlar doğalgaz veya lpg yakıtlı	adet	8		
+167	25.218.1103	750 KW ' a kadar Nötralizasyon Ünitesi	adet	2		
+168	25.225.3025	Panel radyatör (tip 22) 600	metre	60		
+169	25.230.1201	Köşe tip radyatör musluğu ø15 mm (1/2") (TS 579)	adet	50		
+170	25.230.1401	Köşe tip termostatlı radyatör muslukları ø15 mm (1/2") (TS EN 215)	adet	50		
+171	25.245.1102	Kollektör borusu ø 83/3.25 mm. dikişli boru	metre	12		
+172	25.245.1103	Kollektör borusu ø 108/3.71 mm.dikişli boru	metre	15		
+173	25.245.2002	Kollektör ağzı ø 20 mm	adet	6		
+174	25.245.2005	Kollektör ağzı ø 40 mm	adet	8		
+175	25.245.2006	Kollektör ağzı ø 50 mm	adet	32		
+176	25.245.2008	Kollektör ağzı ø 80 mm	adet	6		
+177	25.245.3103	4 çıkışlı vanalı 1"kollektör	adet	6		
+178	25.245.3104	5 çıkışlı vanalı 1"kollektör	adet	8		
+179	25.245.3106	7 çıkışlı vanalı 1"kollektör	adet	3		
+180	25.245.3109	10 çıkışlı vanalı 1"kollektör	adet	3		
+181	25.250.2101	Termometre, madeni, ø 100 mm 120 °C	adet	10		
+182	25.250.2102	Termometre, madeni, ø 100 mm 250 °C	adet	3		
+183	25.250.2301	Manometre ø 100 mm 1 atmosfer kadar bölüntülü	adet	6		
+184	25.250.2304	Manometre ø 100 mm 10 atmosfer kadar bölüntülü	adet	13		
+185	25.255.1301	Silindirik havalandırma deposu 5 lt. (İzole hariç)	adet	8		
+186	25.255.3009	500 lt.'lik çelikten kapalı, diyaframlı genleşme deposu: 10 atm.	adet	2		
+187	25.260.1205	15 m3/h, Ø219 , dn80 flanşlı denge tankı	adet	2		
+188	25.288.5111	Ø400 tek cidarlı paslanmaz çelik baca	metre	30		
+189	25.300.1101/A	Dikişli vidalı çelik boru 1/2" 15 mm, dış cap 21,3/2,60 manşonsuz ağırlık 1,22 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	8		
+190	25.300.1102/A	Dikişli vidalı çelik boru 3/4" 20 mm, dış cap 26,9/2,60 manşonsuz ağırlık 1,57 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	8		
+191	25.300.1103/A	Dikişli vidalı çelik boru 1" 25 mm, dış cap 33,7/3,20 manşonsuz ağırlık 2,43 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	60		
+192	25.300.1104/A	Dikişli vidalı çelik boru 1 1/4" 32 mm, dış cap 42,4/3,20 manşonsuz ağırlık 3,13 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	35		
+193	25.300.1105/A	Dikişli vidalı çelik boru 1 1/2" 40 mm, dış cap 48,3/3,20 manşonsuz ağırlık 3,60 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	55		
+194	25.300.1106/A	Dikişli vidalı çelik boru 2" 50 mm, dış cap 60,3/3,60 manşonsuz ağırlık 5,10 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	60		
+195	25.300.1107/A	Dikişli vidalı çelik boru 2 1/2" 65 mm, dış cap 76,1/3,60 manşonsuz ağırlık 6,54 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	3		
+196	25.300.1108/A	Dikişli vidalı çelik boru 3" 80 mm, dış cap 88,9/4,00 manşonsuz ağırlık 8,53 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	25		
+197	25.300.1109/A	Dikişli vidalı çelik boru 4" 100 mm, dış cap 114,3/4,50 manşonsuz ağırlık 12,50 kg/m (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	35		
+198	25.300.1405/A	Dikişli galvanizli çelik boru 1 1/2" ø40 ortalama dış çap 48,3/3,25 mm (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	25		
+199	25.300.1406/A	Dikişli galvanizli çelik boru 2" ø50 ortalama dış çap 60,3/3,65 mm (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	80		
+200	25.300.1407/A	Dikişli galvanizli çelik boru 2 1/2" ø65 ortalama dış çap 76,1/3,65 mm (bina içinde vidalı döşenmiş boru montaj malzemesi bedeli dahil)	metre	25		
+201	25.300.1410/B	Dikişli galvanizli çelik boru 5" ø125 ortalama dış çap 139,7/5,0 mm (bina içinde kaynaklı döşenmiş boru montaj malzemesi bedeli dahil)	metre	12		
+202	25.300.1603/B	Çelik boru dış çap 33,4/3,4 mm (bina içinde kaynaklı döşenmiş boru montaj malzemesi bedeli dahil)	metre	55		
+203	25.300.1604/B	Çelik boru dış çap 42,2/3,6 mm (bina içinde kaynaklı döşenmiş boru montaj malzemesi bedeli dahil)	metre	50		
+204	25.300.1605/B	Çelik boru dış çap 48,3/3,7 mm (bina içinde kaynaklı döşenmiş boru montaj malzemesi bedeli dahil)	metre	50		
+205	25.300.1606/B	Çelik boru dış çap 60,3/3,9 mm (bina içinde kaynaklı döşenmiş boru montaj malzemesi bedeli dahil)	metre	7		
+206	25.300.1608/B	Çelik boru dış çap 88,9/5,5 mm (bina içinde kaynaklı döşenmiş boru montaj malzemesi bedeli dahil)	metre	4		
+207	25.305.4101/A	Anma ölçüsü 1/2" dış çap/et kalınlığı 20/2,8 mm PN 20 cam elyaf takviyeli polipropilen kompozit pp-rc boru (Bina içinde fizyoterm kaynak ve vidalı olarak döşenmiş polipropilen boru montaj malzemesi bedeli dahil)	metre	365		
+208	25.305.4102/A	Anma ölçüsü 3/4" dış çap/et kalınlığı 25/3,5 mm PN 20 cam elyaf takviyeli polipropilen kompozit pp-rc boru (Bina içinde fizyoterm kaynak ve vidalı olarak döşenmiş polipropilen boru montaj malzemesi bedeli dahil)	metre	255		
+209	25.305.4103/A	Anma ölçüsü 1" dış çap/et kalınlığı 32/4,4 mm PN 20 cam elyaf takviyeli polipropilen kompozit pp-rc boru (Bina içinde fizyoterm kaynak ve vidalı olarak döşenmiş polipropilen boru montaj malzemesi bedeli dahil)	metre	35		
+210	25.305.4104/A	Anma ölçüsü 11/4" dış çap/et kalınlığı 40/5,5 mm PN 20 cam elyaf takviyeli polipropilen kompozit pp-rc boru (Bina içinde fizyoterm kaynak ve vidalı olarak döşenmiş polipropilen boru montaj malzemesi bedeli dahil)	metre	100		
+211	25.305.6101/A	Sert pvc plastik pis su borusu dış çap ø 50-40/3,0 mm (geçme veya yapıştırma muflu) (Fittings, kapak ilavesi,tespit malzemesi ve conta karşılığı boru montaj malzemesi bedeli dahil) (TS EN1329-1)	metre	72		
+212	25.305.6102/A	Sert pvc plastik pis su borusu dış çapø 75-70/3,0 mm (geçme veya yapıştırma muflu) (Fittings, kapak ilavesi,tespit malzemesi ve conta karşılığı boru montaj malzemesi bedeli dahil) (TS EN1329-1)	metre	185		
+213	25.305.6103/A	Sert pvc plastik pis su borusu dış çapø 100-110/3,0 mm (geçme veya yapıştırma muflu) (Fittings, kapak ilavesi,tespit malzemesi ve conta karşılığı boru montaj malzemesi bedeli dahil) (TS EN1329-1)	metre	250		
+214	25.305.6104/A	Sert pvc plastik pis su borusu dış çapø 125/3,2 mm (geçme veya yapıştırma muflu) (Fittings, kapak ilavesi,tespit malzemesi ve conta karşılığı boru montaj malzemesi bedeli dahil) (TS EN1329-1)	metre	16		
+215	25.305.8401/A	PE-Xb Oksijen Bariyerli Boru 16x2,0 mm (Bina içinde boru montaj malzemesi bedeli dahil)	metre	1.750		
+216	25.305.8500	Ø16- Ø17 çaplarında PE-Xa ve PE-Xb borularda kullanılan spiral koruyucu kılıfın işyerinde temini ve montajı.	metre	1.750		
+217	25.312.1103	Yatay tip ; 75 Ø mm pis su geri tepme valfi	adet	6		
+218	25.312.1201	Klapeli tip ;100 Ø mm rogar klapesi	adet	20		
+219	25.312.1202	Klapeli tip ;125 Ø mm rogar klapesi	adet	3		
+220	25.312.2101	Havalandırma boru ve şapkası 70 Ø mm	adet	3		
+221	25.312.2102	Havalandırma boru ve şapkası 100 Ø mm	adet	6		
+222	25.320.2101	15 Ø mm, 1/2" Pirinç, preste imal edilmiş teflon, (PTFE) contalı, tam geçişli, vidalı küresel vana (TS 3148) (TS EN 13547)	adet	26		
+223	25.320.2102	20 Ø mm, 3/4" Pirinç, preste imal edilmiş teflon, (PTFE) contalı, tam geçişli, vidalı küresel vana (TS 3148) (TS EN 13547)	adet	3		
+224	25.320.2105	40 Ø mm, 1 1/2" Pirinç, preste imal edilmiş teflon, (PTFE) contalı, tam geçişli, vidalı küresel vana (TS 3148) (TS EN 13547)	adet	20		
+225	25.320.2106	50 Ø mm, 2" Pirinç, preste imal edilmiş teflon, (PTFE) contalı, tam geçişli, vidalı küresel vana (TS 3148) (TS EN 13547)	adet	6		
+226	25.320.2301	40 Ø mm PN 10-16, Gövdesi pik döküm, küresi dolu paslanmaz çelikten, tam geçişli, paslanmaz çelikten veya teflon tabak yay takviyeli contalı, iki parçalı, flanşlı küresel vana (TS 3148)	adet	8		
+227	25.320.2302	50 Ø mm PN 10-16, Gövdesi pik döküm, küresi dolu paslanmaz çelikten, tam geçişli, paslanmaz çelikten veya teflon tabak yay takviyeli contalı, iki parçalı, flanşlı küresel vana (TS 3148)	adet	30		
+228	25.320.2303	65 Ø mm PN 10-16, Gövdesi pik döküm, küresi dolu paslanmaz çelikten, tam geçişli, paslanmaz çelikten veya teflon tabak yay takviyeli contalı, iki parçalı, flanşlı küresel vana (TS 3148)	adet	15		
+229	25.320.2304	80 Ø mm PN 10-16, Gövdesi pik döküm, küresi dolu paslanmaz çelikten, tam geçişli, paslanmaz çelikten veya teflon tabak yay takviyeli contalı, iki parçalı, flanşlı küresel vana (TS 3148)	adet	8		
+230	25.320.2506	50 Ø mm PN 10-16 Gövdesi pik döküm, küresi dolu paslanmaz çelikten, tam geçişli, paslanmaz çelikten veya teflon tabak yay takviyeli contalı, üç parçalı, flanşlı küresel vana (TS 3148)	adet	4		
+231	25.320.3102	Doğalgaz küresel vana, pirinç preste imal edilmiş teflon contalı, tam geçişli, (3/4" vidalı) ø 20 mm. (TS EN 331)	adet	8		
+232	25.320.3103	Doğalgaz küresel vana, pirinç preste imal edilmiş teflon contalı, tam geçişli, (1" vidalı) ø 25 mm. (TS EN 331)	adet	8		
+233	25.320.3104	Doğalgaz küresel vana, pirinç preste imal edilmiş teflon contalı, tam geçişli, (1 1/4" vidalı) ø 32 mm. (TS EN 331)	adet	12		
+234	25.320.3105	Doğalgaz küresel vana, pirinç preste imal edilmiş teflon contalı, tam geçişli, (1 1/2" vidalı) ø 40 mm. (TS EN 331)	adet	6		
+235	25.320.3302	Doğalgaz Küresel Vanaları (TS 9809) ø 80 mm. (TS EN 331)	adet	2		
+236	25.320.9201	50 Ø mm Flatörlü Seviye Kontrol Vanası ( PN16, flanşlı)	adet	2		
+237	25.325.1205	Pislik tutucu,pn 16,( buhar+su için,pik dök.)ø 40 mm, Vidalı veya Flanşlı (TS 11494)	adet	10		
+238	25.325.1206	Pislik tutucu,pn 16,( buhar+su için,pik dök.)ø 50 mm, Vidalı veya Flanşlı (TS 11494)	adet	5		
+239	25.325.2205	Ø40 mm (1 1/2") Vidalı veya Flanşlı Geri Tepme Ventilleri (TS EN 1074-3)	adet	10		
+240	25.325.2302	Geri tepme ventili, flanşlı döküm gövdeli ø 80 mm. (TS EN 1074-3)	adet	2		
+241	25.325.3206	ø 50 mm Geri tepme ventili, PN-16, Gövdesi Demir Döküm, Baskı Yaylı veya Subaplı, Vidalı veya Flanşlı, Buhar İçin (TS EN 12334)	adet	5		
+242	25.327.1101	Emniyet ventili pirinç,yaylı,vidalı,pn-16 ø 15 mm.(1/2) (ts en ıso 4126-1, 4, 6,7)	adet	8		
+243	25.327.1105	Emniyet ventili pirinç,yaylı,vidalı,pn-16 ø 40 mm.(1 1/2)(ts en ıso 4126-1, 4, 6,7)	adet	3		
+244	25.337.1303	Flanşlı hava ayrıcı Ø 80 mm	adet	2		
+245	25.337.2203	Flanşlı tortu ayırıcı Ø 80 mm	adet	2		
+246	25.345.2103	Doğalgaz filitreleri 2 bar dişli dn25 (1") vidalı (TS 10276)	adet	3		
+247	25.345.2105	Doğalgaz filitreleri 2 bar dişli dn40 (1 1/2") vidalı (TS 10276)	adet	3		
+248	25.345.3203	Filtreli regülatör 1 bar'a kadar dn 32 (1 1/4") vidalı (ts 10624)	adet	3		
+249	25.345.3204	Filtreli regülatör 1 bar'a kadar dn 40 (1 1/2") vidalı (ts 10624)	adet	3		
+250	25.350.3001	Değişken devirli ( frekans konvertörlü )Islak Rotorlu sirkülasyon pompası (0,5 - 3,5) m3/h (1 – 3) mss (TS EN 16297/1-2-3)	adet	8		
+251	25.350.3002	Değişken devirli ( frekans konvertörlü )Islak Rotorlu sirkülasyon pompası (3,5 - 7,0) m3/h (1 – 3) mss (TS EN 16297/1-2-3)	adet	3		
+252	25.350.3004	Değişken devirli ( frekans konvertörlü )Islak Rotorlu sirkülasyon pompası (3- 6) m3/h (3 – 5) mss (TS EN 16297/1-2-3)	adet	8		
+253	25.360.1308	Debisi 15-20 m3/h, basıncı 15-20 mss parçalayıcı bıçaklı dalgıç tip su pompası (TS 12599)	adet	3		
+254	25.365.1101	15 ø mm - 50 ø mm, (1/2" - 2") arası (2") dahil boru boyanması, sülyen boya ile	metre	210		
+255	25.365.1102	50 ø mm - 100 ø mm, (2" - 4") arası (4") dahil boru boyanması, sülyen boya ile	metre	25		
+256	25.365.1201	15 ø mm - 50 ø mm, (1/2" - 2") arası (2") dahil boru boyanması, yağlı boya ile	metre	25		
+257	25.400.2516	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (1") 33 ø mm, cam yünü et kalınlığı: 30 mm	metre	15		
+258	25.400.2521	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (11/4") 42 ø mm, cam yünü et kalınlığı: 30 mm	metre	20		
+259	25.400.2526	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (11/2") 48 ø mm, cam yünü et kalınlığı: 30 mm	metre	55		
+260	25.400.2531	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (2") 60 ø mm, cam yünü et kalınlığı: 30 mm	metre	60		
+261	25.400.2538	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (21/2") 76 ø mm, cam yünü et kalınlığı: 40 mm	metre	3		
+262	25.400.2548	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (3") 89 ø mm, cam yünü et kalınlığı: 80 mm	metre	35		
+263	25.400.2552	Alüminyum Folyo Kaplı Cam Yünü Prefabrik Boru İle Isı Yalıtımı boru dış çapı: (4") 114 ø mm, cam yünü et kalınlığı: 40 mm	metre	8		
+264	25.400.7305	Anma Çapı NW 40 İzolasyon Malzemesi Kauçuk Olan Kelebek Vanalar, Tüm Dişli Grup Vanaları, Çekvalfler için Yalıtım Ceketi	adet	20		
+265	25.400.7506	Anma Çapı NW 50 İzolasyon Malzemesi Taşyünü/ İğnelenmiş Cam Elyaf Olan Pislik Tutucular,Üç parçalı Küresel Vanalar Statik Balans Vanaları,Sürgülü Vanalar,Fanşlı çekvalfler,Glob Vanalar,Üçyollu vanalar,Pompalar için Yalıtım Ceketi	adet	30		
+266	25.400.7507	Anma Çapı NW 65 İzolasyon Malzemesi Taşyünü/ İğnelenmiş Cam Elyaf Olan Pislik Tutucular,Üç parçalı Küresel Vanalar Statik Balans Vanaları,Sürgülü Vanalar,Fanşlı çekvalfler,Glob Vanalar,Üçyollu vanalar,Pompalar için Yalıtım Ceketi	adet	3		
+267	25.400.7508	Anma Çapı NW 80 İzolasyon Malzemesi Taşyünü/ İğnelenmiş Cam Elyaf Olan Pislik Tutucular,Üç parçalı Küresel Vanalar Statik Balans Vanaları,Sürgülü Vanalar,Fanşlı çekvalfler,Glob Vanalar,Üçyollu vanalar,Pompalar için Yalıtım Ceketi	adet	8		
+268	25.400.9201	Boru Yalıtım Malzemesinin Üzerine Galvaniz Sac (0,5 mm) Kaplama Yapılması, kaplama çapı 50 mm'ye kadar	metre	320		
+269	25.400.9202	Boru Yalıtım Malzemesinin Üzerine Galvaniz Sac (0,5 mm) Kaplama Yapılması, 50 mm dahil kaplama çapı 100 mm’ye kadar	metre	180		
+270	25.470.1101	En geniş kenarı 600 mm.ye kadar olanlarda 0,60 mm. galvanizli saçtan dikdörtgen hava kanalı yapılması	metrekare	40		
+271	25.470.1302	En geniş kenarı 499 mm.ye kadar 0.60 mm. paslanmaz çelik levha kullanılarak hava kanalı yapılması	metrekare	45		
+272	25.552.1105	Dış hava tipi elektronik sıcaklık duyar elemanı	adet	2		
+273	25.555.1002	Oransal kontrollü elektronik sıcak su (kazan) kontrol paneli	adet	2		
+274	25.700.1203	Hortum çapı DN 25 hortum uzunluğu 30 m olan TS EN 671-1 normlarında tüplü model yangın dolabı	adet	4		
+275	25.712.1000	İtfaiye bağlantı ağzı	adet	2		
+276	25.712.1101	Damlatma vanası ilavesi itfaiye bağlantı ağzı için ödenecek fark	adet	2		
+277	25.712.1102	Arka plakası ilavesi itfaiye bağlantı ağzı için ödenecek fark	adet	2		
+278	25.712.1103	İtfaiye bilgi levhası ilavesi itfaiye bağlantı ağzı için ödenecek fark	adet	2		
+279	25.712.1104	PN 16 basınç sınıfı ilavesi itfaiye bağlantı ağzı için ödenecek fark	adet	2		
+280	25.715.4207	Dn 100 yangın çek vana	adet	3		
+281	35.420.1350	Doğalgaz dedektörü	adet	3		
+282	48.700.1901	Füme renkli aynaya bizote yapılması ve yerine monte edilmesi (5 mm kalınlığında)	metrekare	15		
+TOPLAM TUTAR (KDV Hariç)	
+
+	
+
+
