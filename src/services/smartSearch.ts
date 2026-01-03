@@ -23,8 +23,8 @@ const STOP_WORDS = new Set([
 // TS/EN referanslarını temizle
 const TS_EN_PATTERN = /\(?\s*TS\s*(?:EN\s*)?(?:ISO\s*)?\d+[\-\d\/]*\s*\)?/gi;
 
-// Özel karakterleri temizle
-const SPECIAL_CHARS = /[°ø²³×µ'"()[\]{}]/g;
+// Özel karakterleri temizle - "/" eklendi (500 hatasına neden oluyordu)
+const SPECIAL_CHARS = /[°ø²³×µ'"()[\]{}\/\\]/g;
 
 /**
  * Arama metnini normalize et - ÖNEMLİ: 500 hatalarını önlemek için
@@ -35,7 +35,7 @@ function normalizeSearchText(text: string): string {
   return text
     // TS/EN referanslarını kaldır
     .replace(TS_EN_PATTERN, ' ')
-    // Özel karakterleri temizle
+    // Özel karakterleri temizle (/, \ dahil)
     .replace(SPECIAL_CHARS, ' ')
     // Tire ve alt çizgileri boşluğa çevir
     .replace(/[-_]/g, ' ')
@@ -133,45 +133,48 @@ export async function smartSearch(
     }
   }
 
-  // LEVEL 2: Temizlenmiş ürün adı ile arama (kısa versiyonu)
+  // LEVEL 2 & 3: Kademeli kelime kısaltma ile arama
+  // Tam isimle başla, bulamazsa her seferinde 1 kelime kısalt
   if (productName && productName.trim().length > 0) {
     const cleanName = normalizeSearchText(productName);
+    const words = cleanName.split(/\s+/).filter(w => w.length > 0);
     
-    // Çok uzun ise kısalt (max 60 karakter)
-    const shortName = cleanName.length > 60 ? cleanName.substring(0, 60).trim() : cleanName;
+    // Maksimum 8 kelimeyle başla, minimum 2 kelimeye kadar kısalt
+    const maxWords = Math.min(words.length, 8);
+    const minWords = 2;
     
-    if (shortName.length > 5) {
+    for (let wordCount = maxWords; wordCount >= minWords; wordCount--) {
+      const searchTerm = words.slice(0, wordCount).join(' ');
+      
+      if (searchTerm.length < 5) continue;
+      
       attempts++;
-      console.log(`[Smart Search] Level 2: Temiz ad arama - "${shortName.substring(0, 50)}..."`);
+      const levelName = wordCount === maxWords ? 'Level 2' : `Level 3.${maxWords - wordCount}`;
+      console.log(`[Smart Search] ${levelName}: Arama (${wordCount} kelime) - "${searchTerm.substring(0, 50)}..."`);
       
       try {
-        const result = await searchByName(shortName);
+        const result = await searchByName(searchTerm);
         
         if (result.success && result.data && result.data.length > 0) {
-          console.log(`[Smart Search] ✓ Level 2 başarılı - ${result.data.length} sonuç bulundu`);
+          // En iyi eşleşmeyi bul
+          const bestMatch = findBestMatch(result.data, productName);
+          console.log(`[Smart Search] ✓ ${levelName} başarılı - ${result.data.length} sonuç, en iyi eşleşme seçildi`);
           return {
-            result: result.data[0],
-            searchLevel: 'full_name' as SearchLevel,
-            searchTerm: shortName,
+            result: bestMatch,
+            searchLevel: wordCount === maxWords ? 'full_name' as SearchLevel : 'truncated' as SearchLevel,
+            searchTerm: searchTerm,
             attempts
           };
         }
       } catch (error) {
-        console.warn(`[Smart Search] Level 2 hata: ${error}`);
+        console.warn(`[Smart Search] ${levelName} hata: ${error}`);
       }
       
       await delay(200);
+      
+      // Maksimum 5 deneme
+      if (attempts >= 5) break;
     }
-  }
-
-  // LEVEL 3: Progressive truncation - Anahtar kelimelerle ara
-  const truncatedResults = await searchWithTruncation(productName);
-  
-  if (truncatedResults) {
-    return {
-      ...truncatedResults,
-      attempts: attempts + truncatedResults.attempts
-    };
   }
 
   // Hiçbir sonuç bulunamadı
@@ -185,76 +188,50 @@ export async function smartSearch(
 }
 
 /**
- * Progressive truncation search - AKILLI KISALTMA
- * Gereksiz kelimeleri atlayıp sadece önemli anahtar kelimeleri ara
+ * Birden fazla sonuç arasından en iyi eşleşmeyi bul
+ * Basit benzerlik skorlaması kullanır
  */
-async function searchWithTruncation(productName: string): Promise<SmartSearchResult | null> {
-  if (!productName || productName.trim().length === 0) {
-    return null;
-  }
-
-  // Anahtar kelimeleri çıkar
-  const keywords = extractKeywords(productName);
+function findBestMatch(results: OskabulutSearchResult[], originalQuery: string): OskabulutSearchResult {
+  if (results.length === 1) return results[0];
   
-  // En az 2 anlamlı kelime olmalı
-  if (keywords.length < 2) {
-    return null;
-  }
-
-  let attempts = 0;
+  const queryLower = originalQuery.toLowerCase();
+  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
   
-  // AKILLI KADEMELER - Farklı kombinasyonları dene
-  const searchStrategies: string[] = [];
+  let bestScore = -1;
+  let bestMatch = results[0];
   
-  // İlk 4-5 kelime
-  if (keywords.length >= 5) {
-    searchStrategies.push(keywords.slice(0, 5).join(' '));
-  }
-  if (keywords.length >= 4) {
-    searchStrategies.push(keywords.slice(0, 4).join(' '));
-  }
-  // İlk 3 kelime
-  if (keywords.length >= 3) {
-    searchStrategies.push(keywords.slice(0, 3).join(' '));
-  }
-  // İlk 2 kelime
-  searchStrategies.push(keywords.slice(0, 2).join(' '));
-  
-  // İlk ve son önemli kelimeleri de dene (bazen malzeme adı sonda olur)
-  if (keywords.length >= 4) {
-    searchStrategies.push(`${keywords[0]} ${keywords[keywords.length - 1]}`);
-  }
-
-  // Max 3 deneme yap
-  for (let i = 0; i < Math.min(searchStrategies.length, 3); i++) {
-    const searchTerm = searchStrategies[i];
+  for (const result of results) {
+    const resultName = (result.tanim || '').toLowerCase();
+    let score = 0;
     
-    if (!searchTerm || searchTerm.length < 5) continue;
-    
-    attempts++;
-    console.log(`[Smart Search] Level 3.${attempts}: Anahtar kelime arama - "${searchTerm}"`);
-    
-    try {
-      const result = await searchByName(searchTerm);
-      
-      if (result.success && result.data && result.data.length > 0) {
-        console.log(`[Smart Search] ✓ Level 3 başarılı - ${result.data.length} sonuç bulundu`);
-        return {
-          result: result.data[0],
-          searchLevel: 'truncated' as SearchLevel,
-          searchTerm: searchTerm,
-          attempts
-        };
-      }
-    } catch (error) {
-      console.warn(`[Smart Search] Level 3.${attempts} hata: ${error}`);
+    // Tam eşleşme kontrolü
+    if (resultName === queryLower) {
+      return result; // Tam eşleşme bulundu
     }
-
-    // Rate limiting için kısa delay
-    await delay(200);
+    
+    // Kelime eşleşmesi skorla
+    for (const word of queryWords) {
+      if (resultName.includes(word)) {
+        score += word.length; // Uzun kelime eşleşmesi daha değerli
+      }
+    }
+    
+    // Başlangıç eşleşmesi bonus
+    if (resultName.startsWith(queryWords[0] || '')) {
+      score += 10;
+    }
+    
+    // Uzunluk benzerliği (çok uzun veya çok kısa sonuçları cezalandır)
+    const lengthDiff = Math.abs(resultName.length - queryLower.length);
+    score -= lengthDiff * 0.1;
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = result;
+    }
   }
-
-  return null;
+  
+  return bestMatch;
 }
 
 /**
