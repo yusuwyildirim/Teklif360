@@ -139,8 +139,8 @@ export async function smartSearch(
     const cleanName = normalizeSearchText(productName);
     const words = cleanName.split(/\s+/).filter(w => w.length > 0);
     
-    // Maksimum 8 kelimeyle başla, minimum 2 kelimeye kadar kısalt
-    const maxWords = Math.min(words.length, 8);
+    // Kaç kelime varsa ondan başla (limit yok), minimum 2 kelimeye kadar kısalt
+    const maxWords = words.length;
     const minWords = 2;
     
     for (let wordCount = maxWords; wordCount >= minWords; wordCount--) {
