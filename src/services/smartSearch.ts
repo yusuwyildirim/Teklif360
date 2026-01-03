@@ -134,18 +134,22 @@ export async function smartSearch(
   }
 
   // LEVEL 2 & 3: Kademeli kelime kısaltma ile arama
-  // Tam isimle başla, bulamazsa her seferinde 1 kelime kısalt
+  // Tam isimle başla, bulamazsa 2'şer kelime kısalt (daha hızlı)
   if (productName && productName.trim().length > 0) {
     const cleanName = normalizeSearchText(productName);
     const words = cleanName.split(/\s+/).filter(w => w.length > 0);
     
-    // Kaç kelime varsa ondan başla (limit yok), minimum 2 kelimeye kadar kısalt
-    const maxWords = words.length;
+    // Maksimum 12 kelime (URL çok uzun olmasın, 500 hatası önlenir)
+    // Minimum 2 kelime, 2'şer atlayarak ara (12→10→8→6→4→2)
+    const maxWords = Math.min(words.length, 12);
     const minWords = 2;
+    const step = 2; // Her seferinde 2 kelime kısalt (daha hızlı)
     
-    for (let wordCount = maxWords; wordCount >= minWords; wordCount--) {
+    for (let wordCount = maxWords; wordCount >= minWords; wordCount -= step) {
       const searchTerm = words.slice(0, wordCount).join(' ');
       
+      // URL çok uzun olmasın (max 100 karakter)
+      if (searchTerm.length > 100) continue;
       if (searchTerm.length < 5) continue;
       
       attempts++;
@@ -156,9 +160,10 @@ export async function smartSearch(
         const result = await searchByName(searchTerm);
         
         if (result.success && result.data && result.data.length > 0) {
-          // En iyi eşleşmeyi bul
-          const bestMatch = findBestMatch(result.data, productName);
-          console.log(`[Smart Search] ✓ ${levelName} başarılı - ${result.data.length} sonuç, en iyi eşleşme seçildi`);
+          // En iyi eşleşmeyi bul ve doğruluk skorunu hesapla
+          const { match: bestMatch, score: matchScore } = findBestMatchWithScore(result.data, productName);
+          const confidencePercent = Math.min(100, Math.round(matchScore));
+          console.log(`[Smart Search] ✓ ${levelName} başarılı - ${result.data.length} sonuç, doğruluk: %${confidencePercent}`);
           return {
             result: bestMatch,
             searchLevel: wordCount === maxWords ? 'full_name' as SearchLevel : 'truncated' as SearchLevel,
@@ -189,41 +194,46 @@ export async function smartSearch(
 
 /**
  * Birden fazla sonuç arasından en iyi eşleşmeyi bul
- * Basit benzerlik skorlaması kullanır
+ * Benzerlik skorlaması kullanır, skor ve eşleşmeyi döndürür
  */
-function findBestMatch(results: OskabulutSearchResult[], originalQuery: string): OskabulutSearchResult {
-  if (results.length === 1) return results[0];
+function findBestMatchWithScore(results: OskabulutSearchResult[], originalQuery: string): { match: OskabulutSearchResult; score: number } {
+  if (results.length === 1) {
+    return { match: results[0], score: 80 }; // Tek sonuç = %80 güven
+  }
   
   const queryLower = originalQuery.toLowerCase();
   const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+  const totalQueryWords = queryWords.length;
   
   let bestScore = -1;
   let bestMatch = results[0];
   
   for (const result of results) {
     const resultName = (result.tanim || '').toLowerCase();
+    let matchedWords = 0;
     let score = 0;
     
     // Tam eşleşme kontrolü
     if (resultName === queryLower) {
-      return result; // Tam eşleşme bulundu
+      return { match: result, score: 100 }; // Tam eşleşme = %100
     }
     
     // Kelime eşleşmesi skorla
     for (const word of queryWords) {
       if (resultName.includes(word)) {
+        matchedWords++;
         score += word.length; // Uzun kelime eşleşmesi daha değerli
       }
     }
     
     // Başlangıç eşleşmesi bonus
     if (resultName.startsWith(queryWords[0] || '')) {
-      score += 10;
+      score += 15;
     }
     
     // Uzunluk benzerliği (çok uzun veya çok kısa sonuçları cezalandır)
     const lengthDiff = Math.abs(resultName.length - queryLower.length);
-    score -= lengthDiff * 0.1;
+    score -= lengthDiff * 0.05;
     
     if (score > bestScore) {
       bestScore = score;
@@ -231,7 +241,11 @@ function findBestMatch(results: OskabulutSearchResult[], originalQuery: string):
     }
   }
   
-  return bestMatch;
+  // Yüzde hesapla: eşleşen kelime oranı + bonus
+  const wordMatchPercent = totalQueryWords > 0 ? (bestScore / (totalQueryWords * 5)) * 100 : 50;
+  const finalScore = Math.max(30, Math.min(95, wordMatchPercent)); // %30-%95 arası
+  
+  return { match: bestMatch, score: finalScore };
 }
 
 /**
