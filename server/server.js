@@ -43,6 +43,39 @@ app.use(cookieParser());
 // Session storage (her kullanıcı için cookies)
 const sessions = new Map();
 
+// Rate limiting - her session için son istek zamanı
+const rateLimitMap = new Map();
+const RATE_LIMIT_MS = 300; // 300ms minimum bekleme süresi
+
+// Session süre limiti (45 dakika)
+const SESSION_TIMEOUT_MS = 45 * 60 * 1000;
+
+/**
+ * Session geçerliliğini kontrol et
+ */
+function isSessionValid(sessionId) {
+  if (!sessions.has(sessionId)) return false;
+  const session = sessions.get(sessionId);
+  if (Date.now() - session.createdAt > SESSION_TIMEOUT_MS) {
+    sessions.delete(sessionId);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Rate limiting kontrolü - çok hızlı istek engelleme
+ */
+function checkRateLimit(sessionId) {
+  const lastRequest = rateLimitMap.get(sessionId) || 0;
+  const now = Date.now();
+  if (now - lastRequest < RATE_LIMIT_MS) {
+    return false; // Çok hızlı
+  }
+  rateLimitMap.set(sessionId, now);
+  return true;
+}
+
 /**
  * GET /health
  * Health check endpoint for Railway/Render deployment
@@ -254,6 +287,7 @@ app.post('/api/login', async (req, res) => {
 /**
  * GET /api/search
  * Oskabulut'ta arama yapar - Gerçek API: POST /ManageLibrary/GetLibraryWorkItems
+ * Retry mekanizması ve rate limiting ile
  */
 app.get('/api/search', async (req, res) => {
   const { query, sessionId } = req.query;
@@ -265,138 +299,149 @@ app.get('/api/search', async (req, res) => {
     });
   }
 
-  if (!sessionId || !sessions.has(sessionId)) {
+  // Session kontrolü
+  if (!sessionId || !isSessionValid(sessionId)) {
     return res.status(401).json({
       success: false,
-      error: 'Geçersiz session. Lütfen önce giriş yapın.'
+      error: 'Geçersiz veya süresi dolmuş session. Lütfen tekrar giriş yapın.'
     });
+  }
+
+  // Rate limit kontrolü
+  if (!checkRateLimit(sessionId)) {
+    // Rate limit aşıldı - 100ms bekle ve devam et
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   const session = sessions.get(sessionId);
   
-  // ÖNCE /kutuphane sayfasını ziyaret et (ASP.NET_SessionId almak için!)
-  console.log(`🔍 Searching via API: ${query}`);
-  console.log(`📄 /kutuphane sayfası ziyaret ediliyor...`);
-  
-  // İlk cookie string: login'den gelen cookie'ler
+  // Cookie string hazırla
   let cookieString = session.cookies.map(c => c.split(';')[0]).join('; ');
   
-  try {
-    const kutuphaneResponse = await axios.get('https://www.oskabulut.com/kutuphane', {
-      headers: {
-        'Cookie': cookieString,
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Language': 'tr-TR,tr;q=0.9',
-        'Referer': 'https://www.oskabulut.com/'
-      }
-    });
+  // Kutuphane sayfası zaten ziyaret edilmiş mi kontrol et
+  if (!session.kutuphaneVisited) {
+    console.log(`🔍 Searching via API: ${query}`);
+    console.log(`📄 /kutuphane sayfası ziyaret ediliyor...`);
     
-    // YENİ COOKIE'LERİ AL (ASP.NET_SessionId burada gelir!)
-    const newCookies = kutuphaneResponse.headers['set-cookie'] || [];
-    if (newCookies.length > 0) {
-      console.log(`✅ /kutuphane sayfasından ${newCookies.length} yeni cookie alındı`);
-      // Yeni cookie'leri session'a ekle
-      session.cookies = [...session.cookies, ...newCookies];
-      // Cookie string'i güncelle - TÜM cookie'ler (login + kutuphane)
-      cookieString = session.cookies.map(c => c.split(';')[0]).join('; ');
-    }
-    console.log(`✅ /kutuphane sayfası başarıyla ziyaret edildi`);
-    console.log(`🍪 Login cookies: ${session.cookies.length - newCookies.length}`);
-    console.log(`🍪 Kutuphane cookies: ${newCookies.length}`);
-    console.log(`🍪 Toplam cookie sayısı: ${session.cookies.length}`);
-    console.log(`🍪 Cookie string preview: ${cookieString.substring(0, 200)}...`);
-  } catch (pageError) {
-    console.warn(`⚠️ /kutuphane sayfası hatası (devam ediliyor): ${pageError.message}`);
-  }
-
-  try {
-
-    // Request payload hazırla (TAM FORMAT - manuel testten)
-    const payload = new URLSearchParams();
-    
-    // libraryBookFascicleIds array (11 kitap - ÇŞB, TSE, vb.)
-    for (let i = 0; i < 11; i++) {
-      payload.append(`libraryBookFascicleIds[${i}][LibraryBookId]`, String(i + 1));
-      payload.append(`libraryBookFascicleIds[${i}][LibraryFascicleId]`, '');
-    }
-    
-    // Diğer parametreler
-    payload.append('includeObsoleteWorkItems', 'false');
-    payload.append('searchInTermsOfProduction', 'false');
-    payload.append('selectedYear', '2025-Kasım');
-    payload.append('searchText', query);  // searchBox DEĞİL, searchText!
-    payload.append('take', '50');
-    payload.append('skip', '0');
-    payload.append('page', '1');
-    payload.append('pageSize', '50');
-
-    // Gerçek API endpoint: POST /ManageLibrary/GetLibraryWorkItems
-    const response = await axios.post(
-      'https://www.oskabulut.com/ManageLibrary/GetLibraryWorkItems',
-      payload.toString(),
-      {
+    try {
+      const kutuphaneResponse = await axios.get('https://www.oskabulut.com/kutuphane', {
         headers: {
           'Cookie': cookieString,
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-          'Accept': 'application/json, text/javascript, */*; q=0.01',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          'X-Requested-With': 'XMLHttpRequest',
-          'Referer': 'https://www.oskabulut.com/kutuphane',
-          'Origin': 'https://www.oskabulut.com'
-        }
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Language': 'tr-TR,tr;q=0.9',
+          'Referer': 'https://www.oskabulut.com/'
+        },
+        timeout: 10000 // 10 saniye timeout
+      });
+      
+      const newCookies = kutuphaneResponse.headers['set-cookie'] || [];
+      if (newCookies.length > 0) {
+        session.cookies = [...session.cookies, ...newCookies];
+        cookieString = session.cookies.map(c => c.split(';')[0]).join('; ');
       }
-    );
-
-    console.log(`✅ API Response Status: ${response.status}`);
-
-    // API response format kontrolü
-    let rawResults = [];
-    if (Array.isArray(response.data)) {
-      rawResults = response.data;
-    } else if (response.data.Data) {
-      rawResults = response.data.Data;
-    } else if (response.data.data) {
-      rawResults = response.data.data;
+      session.kutuphaneVisited = true;
+      console.log(`✅ /kutuphane sayfası başarıyla ziyaret edildi`);
+    } catch (pageError) {
+      console.warn(`⚠️ /kutuphane sayfası hatası: ${pageError.message}`);
     }
-
-    console.log(`✅ Found ${rawResults.length} results`);
-
-    // Frontend için parse et (LibraryWorkItemPrices'dan fiyat çıkar)
-    const results = rawResults.map(item => {
-      // En güncel fiyatı al (genelde ilk eleman)
-      const latestPrice = item.LibraryWorkItemPrices && item.LibraryWorkItemPrices.length > 0
-        ? item.LibraryWorkItemPrices[0].UnitPrice
-        : 0;
-
-      return {
-        pozNo: item.Number || '',
-        tanim: item.Description || '',
-        birim: item.Unit || '',
-        birimFiyat: latestPrice || 0, // NUMBER olarak gönder, string değil!
-        kitapAdi: item.LibraryBookName || 'Oskabulut',
-        fasikulAdi: item.LibraryFascicleName || 'Genel',
-        rawData: item // Debug için orijinal veriyi sakla
-      };
-    });
-
-    console.log(`📊 Parsed ${results.length} items, sample:`, results[0] || 'no results');
-
-    return res.json({
-      success: true,
-      data: results,
-      searchTerm: query
-    });
-
-  } catch (error) {
-    console.error('❌ Search error:', error.message);
-
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-      searchTerm: query
-    });
   }
+
+  // Retry mekanizması ile arama yap
+  const MAX_RETRIES = 2;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      // Request payload hazırla
+      const payload = new URLSearchParams();
+      
+      // libraryBookFascicleIds array (11 kitap)
+      for (let i = 0; i < 11; i++) {
+        payload.append(`libraryBookFascicleIds[${i}][LibraryBookId]`, String(i + 1));
+        payload.append(`libraryBookFascicleIds[${i}][LibraryFascicleId]`, '');
+      }
+      
+      // Diğer parametreler
+      payload.append('includeObsoleteWorkItems', 'false');
+      payload.append('searchInTermsOfProduction', 'false');
+      payload.append('selectedYear', '2025-Kasım');
+      payload.append('searchText', query);
+      payload.append('take', '50');
+      payload.append('skip', '0');
+      payload.append('page', '1');
+      payload.append('pageSize', '50');
+
+      const response = await axios.post(
+        'https://www.oskabulut.com/ManageLibrary/GetLibraryWorkItems',
+        payload.toString(),
+        {
+          headers: {
+            'Cookie': cookieString,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': 'https://www.oskabulut.com/kutuphane',
+            'Origin': 'https://www.oskabulut.com'
+          },
+          timeout: 15000 // 15 saniye timeout
+        }
+      );
+
+      // API response format kontrolü
+      let rawResults = [];
+      if (Array.isArray(response.data)) {
+        rawResults = response.data;
+      } else if (response.data.Data) {
+        rawResults = response.data.Data;
+      } else if (response.data.data) {
+        rawResults = response.data.data;
+      }
+
+      console.log(`✅ [${query.substring(0,30)}...] Found ${rawResults.length} results`);
+
+      // Frontend için parse et
+      const results = rawResults.map(item => {
+        const latestPrice = item.LibraryWorkItemPrices && item.LibraryWorkItemPrices.length > 0
+          ? item.LibraryWorkItemPrices[0].UnitPrice
+          : 0;
+
+        return {
+          pozNo: item.Number || '',
+          tanim: item.Description || '',
+          birim: item.Unit || '',
+          birimFiyat: latestPrice || 0,
+          kitapAdi: item.LibraryBookName || 'Oskabulut',
+          fasikulAdi: item.LibraryFascicleName || 'Genel',
+          rawData: item
+        };
+      });
+
+      return res.json({
+        success: true,
+        data: results,
+        searchTerm: query
+      });
+
+    } catch (error) {
+      lastError = error;
+      console.error(`❌ Search error (attempt ${attempt}/${MAX_RETRIES}): ${error.message}`);
+      
+      if (attempt < MAX_RETRIES) {
+        // Retry öncesi bekle
+        await new Promise(resolve => setTimeout(resolve, 500 * attempt));
+      }
+    }
+  }
+
+  // Tüm retry'lar başarısız
+  console.error('❌ All search retries failed:', lastError?.message);
+  return res.status(500).json({
+    success: false,
+    error: `Arama hatası: ${lastError?.message}`,
+    searchTerm: query
+  });
 });
 
 /**
